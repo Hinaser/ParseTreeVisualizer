@@ -1,0 +1,9 @@
+- page = 'index'
+
+#dropzone
+  = form_tag({action: :parse}, multipart: true, class: 'dropzone') do
+    .fallback
+      =file_field_tag("file")
+      =submit_tag "送信"
+
+#note.cover

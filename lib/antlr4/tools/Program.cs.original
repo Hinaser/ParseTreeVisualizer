@@ -1,0 +1,124 @@
+﻿using System;
+using System.Text;
+using System.IO;
+
+namespace ParseTreeVisualizer
+{
+    public class Program
+    {
+        const int PgSuccess = 0;
+        const int PgFailure = 1;
+
+        public static int Main(string[] args)
+        {
+            String inputFilePath;
+            String outputFilePath;
+            String startingRule;
+            int codePage;
+
+            try
+            {
+                String[] parameters = checkArgs(args);
+
+                inputFilePath = parameters[0];
+                outputFilePath = parameters[1];
+                startingRule = parameters[2];
+                codePage = Int32.Parse(parameters[3]);
+            }
+            catch (Exception)
+            {
+                return PgFailure;
+            }
+
+            // Parse asp file
+            CommonGrammar grammar;
+            try
+            {
+                grammar = new CommonGrammar();
+                grammar.Initialize<CUSTOM_LEXER, CUSTOM_PARSER>(inputFilePath, codePage);
+                grammar.Parse(startingRule);
+                grammar.WriteParseTree(outputFilePath, codePage);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Execution failed");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                return PgFailure;
+            }
+
+            return PgSuccess;
+        }
+
+        public static void Usage()
+        {
+            Console.WriteLine($"Usage: {System.AppDomain.CurrentDomain.FriendlyName} <Input file path> <Output file path> <Starting rule name> [input file encoding]");
+            Console.WriteLine("<Input file path>: Required. An input file name to parse");
+            Console.WriteLine("<Output file path>: Required. An output parse tree javascript file name.");
+            Console.WriteLine("<Starting rule name>: Required. Starting rule name to parse.");
+            Console.WriteLine("[input file encoding]: Optional. Code page of the input file. If omitted, UTF-8 is used.");
+            Console.WriteLine("                       Shift-JIS: 932");
+            Console.WriteLine("                       UTF-8: 65001");
+        }
+
+        /// <summary>
+        /// Check arguments for this program. If optional arguments is missing, this method complements it.
+        /// </summary>
+        /// <param name="args">Program arguments</param>
+        /// <returns>Validated arguments</returns>
+        public static string[] checkArgs(string[] args)
+        {
+            // When no required args are found, show usage and exist
+            if (args.Length == 0 || args.Length > 4)
+            {
+                Usage();
+                throw new Exception();
+            }
+
+            string inputFilePath = args[0];
+            string outputFilePath = args[1];
+            string startingRule = args[2];
+            int codePage = 65001;
+
+            // When codepage is specified, try to get encoding object
+            if (args.Length == 4)
+            {
+                // Error when codePage is not number
+                if (!Int32.TryParse(args[3], out codePage))
+                {
+                    Console.WriteLine("Codepage must be integer value");
+                    Usage();
+                    throw new Exception();
+                }
+
+                // Check if codePage is valid.
+                try
+                {
+                    Encoding.GetEncoding(codePage);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    Console.WriteLine("Codepage must be in range between 0 and 65535");
+                    Usage();
+                    throw new Exception();
+                }
+                catch (NotSupportedException)
+                {
+                    Console.WriteLine($"Codepage {codePage} not found");
+                    Usage();
+                    throw new Exception();
+                }
+            }
+
+            // Check file to parse exists
+            if (!File.Exists(inputFilePath))
+            {
+                Console.WriteLine($"File {inputFilePath} was not found");
+                Usage();
+                throw new Exception();
+            }
+
+            return new String[] { inputFilePath, outputFilePath, startingRule, codePage.ToString() };
+        }
+    }
+}

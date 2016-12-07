@@ -1,0 +1,69 @@
+body {
+  line-height: 1.5;
+  font-family: 'Open Sans',sans-serif;
+}
+
+.leaf {
+  color: red;
+  font-weight: bold;
+}
+
+.token-name {
+  margin-left: 20px;
+  color: #777;
+  font-weight: normal;
+}
+
+.treeView{
+  -moz-user-select:none;
+  position:relative;
+}
+
+.treeView ul{
+  margin:0 0 0 -1.5em;
+  padding:0 0 0 1.5em;
+}
+
+.treeView ul ul{
+  background:image_url('list-item-contents.png') repeat-y left;
+}
+
+.treeView li:last-child > ul{
+  background-image:none;
+}
+
+.treeView li{
+  margin:0;
+  padding:0;
+  background:image_url('list-item-root.png') no-repeat top left;
+  list-style-position:inside;
+  list-style-image:image_url('button.png');
+  cursor:auto;
+}
+
+.treeView li.collapsibleListOpen{
+  list-style-image:image_url('button-open.png');
+  cursor:pointer;
+}
+
+.treeView li.collapsibleListClosed{
+  list-style-image:image_url('button-closed.png');
+  cursor:pointer;
+}
+
+.treeView li li{
+  background-image:image_url('list-item.png');
+  padding-left:1.5em;
+}
+
+.treeView li li:last-child{
+  background-image:image_url('list-item-last.png');
+}
+
+.treeView li.collapsibleListOpen{
+  background-image:image_url('list-item-open.png');
+}
+
+.treeView li.collapsibleListOpen:last-child{
+  background-image:image_url('list-item-last-open.png');
+}
