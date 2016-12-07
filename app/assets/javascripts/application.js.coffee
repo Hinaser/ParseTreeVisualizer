@@ -14,14 +14,41 @@
 #= require jquery_ujs
 #= require turbolinks
 #= require dropzone
+#= require jquery.nicescroll
 #= require_tree .
 
-$ ->
+init_script = ->
   data_page = $("body").data('page')
+
+  # Layout script setup
+  $('.switch-pane').on 'click', (e)->
+    e.preventDefault()
+    target = $(this).data('target')
+    active_pane = $('.pane.fade.active.in')
+    active_pane.removeClass 'in'
+
+    setTimeout(()->
+      active_pane.removeClass('active')
+      $("#" + target).addClass('active')
+      setTimeout(()->
+        $("#" + target).addClass('in')
+      , 100)
+    , 100)
+
+    $('.nav > li.active').removeClass('active')
+    $(this).parent().addClass('active')
+
 
   switch data_page
     when 'root:index'
-# Intialize dropzone.js
+      # Initialize nicescroll
+      $('html').niceScroll
+        autohidemode: true
+        cursorwidth: "10px"
+        zIndex: 20000
+        hidecursordelay: 1000
+
+      # Initialize dropzone.js
       uploaded_file_id = null
       dropzone = null
       Dropzone.autoDiscover = false;
@@ -34,7 +61,7 @@ $ ->
         autoDiscover: false
         autoProcessQueue: true
         addRemoveLinks: false
-        dictDefaultMessage: '解析したいファイルをここにドラッグ&ドロップしてください'
+        dictDefaultMessage: gon.i18n['drophere']
         paramName: 'file'
         headers:
           'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
@@ -43,104 +70,109 @@ $ ->
           dropzone = this
           message_area = $('#parse-result .message')
           parse_area = $('#parse-result')
-          progress_area = $('<div id="parse-progress"><span id="current-count"></span> / <span id="total-count"></span>件処理済みです。 進捗率 <span id="current-progress"></span>%</div>')
+          parse_error = $('#parse-error')
+          dropzone_msg_area = $('#dropzone-msg')
+
           start_time = 0
           end_time = 0
           uploading_filename = ''
-
-          loading_img = $('<div id="loader">')
-          loading_img.css('background-image', 'url(' + image_path('ripple.gif') + ')')
-          loading_img.css('width', '120px')
-          loading_img.css('height', '120px')
-
-          file_add_img = $('<img>')
-          file_add_img.attr('src', image_path('file_add.png'))
-          $('.dropzone .dz-default').prepend(file_add_img)
 
           reset_message_area = ->
             message_area.empty()
 
           onComplete = (file)->
             dropzone.removeFile(file)
-            progress_area.remove()
             $('#loader').remove()
 
           this.on 'addedfile', (file) ->
             uploading_filename = file.name
-            $("#note").empty()
-            $("#note").removeClass("cover")
-            $("#note").append("<div id='comment'>解析サーバにファイルをアップロードして解析処理中... ここにファイル解析結果の解析木が表示されます。</div>")
-            $('body').append(loading_img)
+            dropzone_msg_area.empty()
+            dropzone_msg_area.append("<div id='comment'><img src='#{image_path('hourglass.gif')}'>#{gon.i18n['parsing']}</div>")
+            dropzone_msg_area.addClass('in')
+
+            parse_error.empty()
+            parse_error.removeClass('in')
+
             start_time = +new Date()
 
           this.on 'success', (file, res)->
             end_time = +new Date()
             diff_server = end_time - start_time
-            $("#comment").html("<p>サーバでの解析処理時間: #{diff_server} ミリ秒</p><p>解析結果のHTMLをブラウザで生成中... 少し時間がかかります。(最大数分ほど)</p>")
 
-            start_time = +new Date()
+            dropzone_msg_area.removeClass('in')
+            setTimeout ->
+              dropzone_msg_area.html("<p>#{gon.i18n['processing_time_in_server']} #{diff_server} #{gon.i18n['milliseconds']}</p><p><img src='#{image_path('hourglass.gif')}'>#{gon.i18n['rendering']}</p>")
+              dropzone_msg_area.addClass('in')
 
-            reset_message_area()
-            file_id = res.file
-            onComplete(file)
-            $("head").append("<script src='/js?name=#{file_id}'>")
-            CST.addRuleListener constructTreeView(CST, jQuery)
-            CST.walk()
+              setTimeout ->
+                $('#note').removeClass("cover")
 
-            $("#note").append(CST.treeView);
+                start_time = +new Date()
 
-            $(CST.treeViewRoot).addClass("collapsibleList");
-            CollapsibleLists.apply();
-            CollapsibleLists.openAll($(".collapsibleList").get(0));
+                reset_message_area()
+                file_id = res.file
+                onComplete(file)
+                $("head").append("<script src='/js?name=#{file_id}'>")
+                CST.addRuleListener constructTreeView(CST, jQuery)
+                CST.walk()
 
-            end_time = +new Date()
-            diff_client = end_time - start_time
+                $("#note").append(CST.treeView);
 
-            errorCount = CST.errors().length
+                $(CST.treeViewRoot).addClass("collapsibleList");
+                CollapsibleLists.apply();
+                CollapsibleLists.openAll($(".collapsibleList").get(0));
 
-            result_text = """
-            <p>
-            CST(解析木)オブジェクトがページにロードされました。<br />
-            &nbsp;&nbsp;&nbsp;&nbsp;解析ファイル名: #{uploading_filename}<br />
-            &nbsp;&nbsp;&nbsp;&nbsp;サーバでの解析処理時間: #{diff_server} ミリ秒<br />
-            &nbsp;&nbsp;&nbsp;&nbsp;ブラウザの描画処理時間: #{diff_client} ミリ秒<br />
-            &nbsp;&nbsp;&nbsp;&nbsp;エラーの数: #{errorCount}<br />
-            </p>
-            """
+                end_time = +new Date()
+                diff_client = end_time - start_time
 
-            if errorCount > 0
-              result_text += """
-              エラー内容<br />
-              <table class='errors'>
-              """
-              for val, i in CST.errors()
-                escaped_msg = $('<div />').text(val.msg).html()
-                result_text += """
-                <tr><td>#{val.line}行目</td><td>#{val.pos}バイト目</td><td>#{escaped_msg}</td></tr>
-                """
+                errorCount = CST.errors().length
 
-              result_text += """
-              </table>
-              """
+                dropzone_msg_area.removeClass('in')
+                setTimeout ->
+                  dropzone_msg_area.empty()
+                  result_text = gon.i18n['parse_result']
+                  result_text = result_text
+                                  .replace('#{uploading_filename}', uploading_filename)
+                                  .replace('#{diff_server}', diff_server)
+                                  .replace('#{diff_client}', diff_client)
+                                  .replace('#{errorCount}', errorCount)
+                  result_msg = $('<div class="result-msg">')
+                  result_msg.html(result_text)
+                  dropzone_msg_area.append(result_msg)
 
-            result_text += """
-            <p>
-            F12の開発者ツールのコンソールで'CST'とタイプするとCSTオブジェクトの内容を直接確認できます<br />
-            &nbsp;&nbsp;&nbsp;&nbsp;CST.errors():&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;解析エラーの一覧。<br />
-            &nbsp;&nbsp;&nbsp;&nbsp;CST.tokens():&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;解析結果のトークンの一覧。<br />
-            &nbsp;&nbsp;&nbsp;&nbsp;CST.tree():&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CSTの木構造(連結リスト)の本体のデータです
-            </p>
-            <p>
-            下記のCSTの見方<br />
-            &nbsp;&nbsp;&nbsp;&nbsp;赤色で太文字:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;解析元ファイル内の文字列<br />
-            &nbsp;&nbsp;&nbsp;&nbsp;黒色で先頭小文字:&nbsp;パースルール名<br />
-            &nbsp;&nbsp;&nbsp;&nbsp;灰色で先頭大文字:&nbsp;トークン名
-            </p>
-            """
-            $("#comment").html(result_text)
+                  ptree_desc = $('<div class="ptree-description">')
+                  ptree_desc.html(gon.i18n['what_is_parse_tree'])
+                  dropzone_msg_area.append(ptree_desc)
+
+                  dropzone_msg_area.addClass('in')
+
+                  if errorCount > 0
+                    error_text = """
+                    #{gon.i18n['error_caption']}<br />
+                    <table class='errors'>
+                    """
+                    for val, i in CST.errors()
+                      escaped_msg = $('<div />').text(val.msg).html()
+                      error_text += """
+                      <tr><td>#{gon.i18n['error_line']}#{val.line}</td><td>#{val.pos}#{gon.i18n['error_bytes']}</td><td>#{escaped_msg}</td></tr>
+                      """
+
+                    error_text += """
+                    </table>
+                    """
+
+                    parse_error.html(error_text)
+                    parse_error.addClass('in')
+                ,20
+              ,100
+            ,100
 
           this.on 'error', (file, error)->
             reset_message_area()
             alert(error)
             $("#note").addClass("cover")
             onComplete(file)
+
+$ init_script
+$(document).on 'turbolinks:load', ->
+  init_script()

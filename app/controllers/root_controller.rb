@@ -13,16 +13,18 @@ class RootController < ApplicationController
   TREE_GENERATOR = Rails.root.join('lib', 'antlr4', 'bin', 'ParseTreeGenerator.exe').to_s
 
   def index
-    # For internet explorer, If requested host name is not ip address, redirects to the one for ipaddress.
-    # This is work around for IE compatibility mode.
-    if browser.ie?
-      if (IPAddr.new(request.host) rescue nil).nil?
-        protocol = request.protocol
-        ip_address = Socket.ip_address_list[0].ip_address
-        port = request.port
-        return redirect_to "#{protocol}#{ip_address}:#{port}"
-      end
-    end
+    gon.i18n = {
+      'drophere': I18n.t('index.drophere'),
+      'parsing': I18n.t('index.parsing'),
+      'processing_time_in_server': I18n.t('index.processing_time_in_server'),
+      'milliseconds': I18n.t('index.milliseconds'),
+      'rendering':  I18n.t('index.rendering'),
+      'parse_result': I18n.t('index.parse_result_html'),
+      'what_is_parse_tree': I18n.t('index.what_is_parse_tree'),
+      'error_caption': I18n.t('index.error.caption'),
+      'error_line': I18n.t('index.error.line'),
+      'error_bytes': I18n.t('index.error.bytes'),
+    }
   end
 
   def parse

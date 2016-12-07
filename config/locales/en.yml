@@ -20,4 +20,42 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  title: Parse Tree Visualizer
+  menu:
+    try: Try parse
+    about: About
+  index:
+    drophere: Drag and Drop a file here to parse
+    parsing: Upload completed. Generating parse tree in server...
+    processing_time_in_server: 'Processing time in server: '
+    milliseconds: milliseconds
+    rendering: Rendering generated parse tree... This may take long time.
+    parse_result_html: '<p>
+                          Parse tree object has been loaded to the page
+                          <table id="parse-result-summary">
+                          <tr><td>Parsed file: </td><td class="value">#{uploading_filename}</td></tr>
+                          <tr><td>Parsing in server:</td><td class="value">#{diff_server} msec</td></tr>
+                          <tr><td>Rendering in browser:</td><td class="value">#{diff_client} msec</td></tr>
+                          <tr><td># of errors:</td><td class="value">#{errorCount}</td></tr>
+                          </table>
+                        </p>
+                        '
+    what_is_parse_tree: '
+                        <p>
+                          <br>
+                          <br>
+                          <table id="what-is-ptree">
+                            <tr><td>Red and Bold:</td><td>Charaters in original parsed file</td></tr>
+                            <tr><td>Black and first char''s lowercase :</td><td>Parse rule name</td></tr>
+                            <tr><td>Gray and first char''s uppercase:</td><td>Lexical token name</td></tr>
+                          </table>
+                        </p>
+                        '
+    error:
+      caption: ERROR
+      line: Line
+      bytes: Bytes
+  about:
+    description_html: '
+      <p>About</p>
+    '

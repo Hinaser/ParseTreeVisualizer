@@ -20,4 +20,42 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 ja:
-  hello: "Hello world"
+  title: 解析木ビューワ
+  menu:
+    try: 解析トライ
+    about: アバウト
+  index:
+    drophere: 解析するファイルをドラッグ＆ドロップしてください
+    parsing: アップロード完了。サーバで解析木作成中...
+    processing_time_in_server: 'サーバでの解析処理時間:'
+    milliseconds: ミリ秒
+    rendering: 解析結果のHTMLをブラウザで生成中... 少し時間がかかります。(最大数分ほど)
+    parse_result_html: '<p>
+                          解析木オブジェクトがページにロードされました。
+                          <table id="parse-result-summary">
+                          <tr><td>解析ファイル: </td><td class="value">#{uploading_filename}</td></tr>
+                          <tr><td>サーバでの解析処理時間:</td><td class="value">#{diff_server} ミリ秒</td></tr>
+                          <tr><td>ブラウザの描画処理時間:</td><td class="value">#{diff_client} ミリ秒</td></tr>
+                          <tr><td>エラー数:</td><td class="value">#{errorCount}</td></tr>
+                          </table>
+                        </p>
+                        '
+    what_is_parse_tree: '
+                        <p>
+                          <br>
+                          <br>
+                          <table id="what-is-ptree">
+                            <tr><td>赤色で太文字:</td><td>解析元ファイル内の文字列</td></tr>
+                            <tr><td>黒色で先頭小文字:</td><td>パースルール名</td></tr>
+                            <tr><td>灰色で先頭大文字:</td><td>トークン名</td></tr>
+                          </table>
+                        </p>
+    '
+    error:
+      caption: エラー
+      line: 行
+      bytes: バイト目
+  about:
+    description_html: '
+      <p>アバウト</p>
+    '

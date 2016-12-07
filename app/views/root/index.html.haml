@@ -1,9 +1,51 @@
 - page = 'index'
 
-#dropzone
-  = form_tag({action: :parse}, multipart: true, class: 'dropzone') do
-    .fallback
-      =file_field_tag("file")
-      =submit_tag "送信"
+%header
+  %a{:href => "https://github.com/you"}
+    %img{:alt => "Fork me on GitHub", "data-canonical-src" => "https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png", :src => "https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67", :style => "position: absolute; top: 0; right: 0; border: 0; z-index: 10000;"}/
+  %nav.navbar.navbar-dark.navbar-static-top
+    .container
+      %ul.nav.navbar-nav
+        %li
+          %span= t('title')
+        %li.active
+          %a.switch-pane{"data-target" => "about", :href => "#about"}= t('menu.about')
+        %li
+          %a.switch-pane{"data-target" => "parsetree", :href => "#parsetree"}= t('menu.try')
+      .select-lang
+        =link_to root_path(locale: 'en') do
+          %i.famfamfam-flag-us
+        =link_to root_path(locale: 'ja') do
+          %i.famfamfam-flag-jp
 
-#note.cover
+.container
+  #parsetree.pane.fade
+    .ptree-header
+      #dropzone
+        = form_tag({action: :parse}, multipart: true, class: 'dropzone') do
+          .fallback
+            =file_field_tag('file')
+            =submit_tag '送信'
+          #preview-template{style: 'display: none'}
+            .dz-preview.dz-file-preview
+              .dz-details
+                .dz-filename
+                  %span{'data-dz-name': ''}
+                .dz-size{'data-dz-size': ''}
+                %img{'data-dz-thumbnail': ''}/
+              .dz-progress
+                %span.dz-upload{'data-dz-uploadprogress': ''}
+              .dz-success-mark
+                %span ✔
+              .dz-error-mark
+                %span ✘
+              .dz-error-message
+                %span{'data-dz-errormessage': ''}
+      #dropzone-msg.fade
+      #parse-error.fade
+    #note.cover
+
+  #about.pane.fade.active.in
+    .description
+      = t('about.description_html')
+

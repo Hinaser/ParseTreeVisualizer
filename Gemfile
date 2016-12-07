@@ -39,6 +39,7 @@ gem 'jquery-dotdotdot-rails'
 gem 'nprogress-rails'
 gem 'underscore-rails'
 gem 'dropzonejs-rails'
+gem 'nicescroll-rails'
 
 # Social share buttons
 gem 'social-share-button'
