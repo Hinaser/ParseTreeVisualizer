@@ -9,6 +9,12 @@ namespace :antlr4 do
 
   desc 'Compile grammar file into csharp file and dll'
   task :compile_grammar, [:grammar] do |t, args|
+    if args[:grammar].blank?
+      puts 'Usage: rake antlr4:compile_grammar[<grammar>]'
+      puts '  <grammar>: Name of grammar.'
+      next
+    end
+
     output_dir = Rails.root.join('lib', 'antlr4', 'grammars', args[:grammar])
     Dir.chdir(output_dir) do
       system("java -classpath #{G4_COMPILER_PATH} org.antlr.v4.Tool #{output_dir}/*.g4 -Dlanguage=CSharp_v4_5")
@@ -19,6 +25,12 @@ namespace :antlr4 do
 
   desc 'Compile grammar analyzer tool'
   task :compile_tool, [:grammar] do |t, args|
+    if args[:grammar].blank?
+      puts 'Usage: rake antlr4:compile_tool[<grammar>]'
+      puts '  <grammar>: Name of grammar.'
+      next
+    end
+
     # compile .g4 grammar file into .cs csharp file
     Rake::Task['antlr4:compile_grammar'].invoke(args[:grammar])
 
