@@ -34,6 +34,7 @@ ja:
                           解析木オブジェクトがページにロードされました。
                           <table id="parse-result-summary">
                           <tr><td>解析ファイル: </td><td class="value">#{uploading_filename}</td></tr>
+                          <tr><td>ファイルの文字コード: </td><td class="value">#{encoding}</td></tr>
                           <tr><td>サーバでの解析処理時間:</td><td class="value">#{diff_server} ミリ秒</td></tr>
                           <tr><td>ブラウザの描画処理時間:</td><td class="value">#{diff_client} ミリ秒</td></tr>
                           <tr><td>エラー数:</td><td class="value">#{errorCount}</td></tr>
@@ -42,6 +43,7 @@ ja:
                         '
     what_is_parse_tree: '
                         <p>
+                          <br>
                           <br>
                           <br>
                           <table id="what-is-ptree">

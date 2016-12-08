@@ -13,7 +13,6 @@ namespace ParseTreeVisualizer
         {
             String inputFilePath;
             String outputFilePath;
-            String startingRule;
             int codePage;
 
             try
@@ -22,8 +21,7 @@ namespace ParseTreeVisualizer
 
                 inputFilePath = parameters[0];
                 outputFilePath = parameters[1];
-                startingRule = parameters[2];
-                codePage = Int32.Parse(parameters[3]);
+                codePage = Int32.Parse(parameters[2]);
             }
             catch (Exception)
             {
@@ -36,7 +34,7 @@ namespace ParseTreeVisualizer
             {
                 grammar = new CommonGrammar();
                 grammar.Initialize<CUSTOM_LEXER, CUSTOM_PARSER>(inputFilePath, codePage);
-                grammar.Parse(startingRule);
+                grammar.Parse();
                 grammar.WriteParseTree(outputFilePath, codePage);
             }
             catch (Exception e)
@@ -52,10 +50,9 @@ namespace ParseTreeVisualizer
 
         public static void Usage()
         {
-            Console.WriteLine($"Usage: {System.AppDomain.CurrentDomain.FriendlyName} <Input file path> <Output file path> <Starting rule name> [input file encoding]");
+            Console.WriteLine($"Usage: {System.AppDomain.CurrentDomain.FriendlyName} <Input file path> <Output file path> [input file encoding]");
             Console.WriteLine("<Input file path>: Required. An input file name to parse");
             Console.WriteLine("<Output file path>: Required. An output parse tree javascript file name.");
-            Console.WriteLine("<Starting rule name>: Required. Starting rule name to parse.");
             Console.WriteLine("[input file encoding]: Optional. Code page of the input file. If omitted, UTF-8 is used.");
             Console.WriteLine("                       Shift-JIS: 932");
             Console.WriteLine("                       UTF-8: 65001");
@@ -69,7 +66,7 @@ namespace ParseTreeVisualizer
         public static string[] checkArgs(string[] args)
         {
             // When no required args are found, show usage and exist
-            if (args.Length == 0 || args.Length > 4)
+            if (args.Length == 0 || args.Length > 3)
             {
                 Usage();
                 throw new Exception();
@@ -77,14 +74,13 @@ namespace ParseTreeVisualizer
 
             string inputFilePath = args[0];
             string outputFilePath = args[1];
-            string startingRule = args[2];
             int codePage = 65001;
 
             // When codepage is specified, try to get encoding object
-            if (args.Length == 4)
+            if (args.Length == 3)
             {
                 // Error when codePage is not number
-                if (!Int32.TryParse(args[3], out codePage))
+                if (!Int32.TryParse(args[2], out codePage))
                 {
                     Console.WriteLine("Codepage must be integer value");
                     Usage();
@@ -118,7 +114,7 @@ namespace ParseTreeVisualizer
                 throw new Exception();
             }
 
-            return new String[] { inputFilePath, outputFilePath, startingRule, codePage.ToString() };
+            return new String[] { inputFilePath, outputFilePath, codePage.ToString() };
         }
     }
 }

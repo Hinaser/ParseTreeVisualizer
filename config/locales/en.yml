@@ -34,6 +34,7 @@ en:
                           Parse tree object has been loaded to the page
                           <table id="parse-result-summary">
                           <tr><td>Parsed file: </td><td class="value">#{uploading_filename}</td></tr>
+                          <tr><td>File encoding: </td><td class="value">#{encoding}</td></tr>
                           <tr><td>Parsing in server:</td><td class="value">#{diff_server} msec</td></tr>
                           <tr><td>Rendering in browser:</td><td class="value">#{diff_client} msec</td></tr>
                           <tr><td># of errors:</td><td class="value">#{errorCount}</td></tr>
@@ -42,6 +43,7 @@ en:
                         '
     what_is_parse_tree: '
                         <p>
+                          <br>
                           <br>
                           <br>
                           <table id="what-is-ptree">

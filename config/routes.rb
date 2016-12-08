@@ -4,7 +4,7 @@ Rails.application.routes.draw do
 
   scope '(:locale)', locale: /#{I18n.available_locales.join('|')}/, defaults: {locale: I18n.default_locale} do
     post '/parse' => 'root#parse'
-    get '/js' => 'root#js'
+    get '/js/:name' => 'root#js', name: /[a-zA-Z0-9]+/
   end
 
   get '/:locale' =>  'root#index', locale: /#{I18n.available_locales.join('|')}/, as: :root_locale

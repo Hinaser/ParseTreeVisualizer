@@ -68,6 +68,8 @@ gem 'addressable'
 # and https://groups.google.com/forum/#!topic/ruby-security-ann/Dy7YiKb_pMM
 gem 'nokogiri', '~> 1.6.7', '>= 1.6.7.2'
 
+gem 'charlock_holmes'
+
 gem 'browser'
 
 group :development, :test do

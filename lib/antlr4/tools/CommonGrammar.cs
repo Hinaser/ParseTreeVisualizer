@@ -202,6 +202,25 @@ namespace ParseTreeVisualizer
         }
 
         /// <summary>
+        /// Execute parsing. Root rule name is automatically detected
+        /// </summary>
+        /// <returns>Instance of parse tree</returns>
+        public IParseTree Parse()
+        {
+            CheckInitialized();
+
+            string rule = Parser.RuleNames[0];
+
+            // Try parsing by rule name.
+            // When input rule name is "RootRule", actually `this.Parser.RootRule()` will be invoked.
+            Type t = this.Parser.GetType();
+            MethodInfo method = t.GetMethod(rule);
+            this.cst = (ParserRuleContext)method.Invoke(this.Parser, null);
+
+            return this.cst;
+        }
+
+        /// <summary>
         /// Returns tree listener. Should be called after parsing is done.
         /// Otherwise, returning listener instance holds almost nothing.
         /// </summary>

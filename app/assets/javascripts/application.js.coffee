@@ -47,6 +47,7 @@ init_script = ->
     when 'root:index'
       # parameters being retrieved as a parse result
       uploading_filename = null
+      file_encoding = null
       diff_server = null
       diff_client = null
       errorCount = null
@@ -62,6 +63,7 @@ init_script = ->
           result_text = i18n_text()['index']['parse_result_html']
           result_text = result_text
             .replace('#{uploading_filename}', uploading_filename)
+            .replace('#{encoding}', file_encoding)
             .replace('#{diff_server}', diff_server)
             .replace('#{diff_client}', diff_client)
             .replace('#{errorCount}', errorCount)
@@ -104,16 +106,6 @@ init_script = ->
         cursorwidth: "10px"
         zindex: 20000
         hidecursordelay: 1000
-
-      # Initialize tree description message
-      cst_description_html = """
-        <p>
-        F12の開発者ツールのコンソールで'CST'とタイプするとCSTオブジェクトの内容を直接確認できます<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;CST.errors():&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;解析エラーの一覧。<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;CST.tokens():&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;解析結果のトークンの一覧。<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;CST.tree():&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CSTの木構造(連結リスト)の本体のデータです
-        </p>
-      """
 
       # Initialize dropzone.js
       uploaded_file_id = null
@@ -160,11 +152,12 @@ init_script = ->
             parse_error.empty()
             parse_error.removeClass('in')
 
-            start_time = +new Date()
+            $('#note').addClass('cover').empty()
 
           this.on 'success', (file, res)->
-            end_time = +new Date()
-            diff_server = end_time - start_time
+            console.log res
+            diff_server = Math.round(res.total_time * 1000)
+            file_encoding = res.encoding
 
             dropzone_msg_area.removeClass('in')
             setTimeout ->
@@ -179,7 +172,11 @@ init_script = ->
                 reset_message_area()
                 file_id = res.file
                 onComplete(file)
-                $("head").append("<script src='/js?name=#{file_id}'>")
+
+                script_cst = $('#CST')
+                if script_cst.length > 0
+                  script_cst.remove()
+                $("head").append("<script id ='CST' src='/js/#{file_id}'>")
                 CST.addRuleListener constructTreeView(CST, jQuery)
                 CST.walk()
 
@@ -190,8 +187,8 @@ init_script = ->
                 CollapsibleLists.openAll($(".collapsibleList").get(0));
 
                 end_time = +new Date()
-                diff_client = end_time - start_time
 
+                diff_client = end_time - start_time
                 errorCount = CST.errors().length
 
                 dropzone_msg_area.removeClass('in')
@@ -200,6 +197,7 @@ init_script = ->
                   result_text = i18n_text()['index']['parse_result_html']
                   result_text = result_text
                                   .replace('#{uploading_filename}', uploading_filename)
+                                  .replace('#{encoding}', file_encoding)
                                   .replace('#{diff_server}', diff_server)
                                   .replace('#{diff_client}', diff_client)
                                   .replace('#{errorCount}', errorCount)
@@ -219,7 +217,7 @@ init_script = ->
                     <table class='errors'>
                     """
                     for val, i in CST.errors()
-                      escaped_msg = $('<div />').text(val.msg).html()
+                      escaped_msg = $('<div>').text(val.msg).html()
                       error_text += """
                       <tr><td>#{i18n_text()['index']['error']['line']}#{val.line}</td><td>#{val.pos}#{i18n_text()['index']['error']['bytes']}</td><td>#{escaped_msg}</td></tr>
                       """
