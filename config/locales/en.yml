@@ -31,7 +31,7 @@ en:
     milliseconds: milliseconds
     rendering: Rendering generated parse tree... This may take long time.
     parse_result_html: '<p>
-                          Parse tree object has been loaded to the page
+                          Parse tree object has been loaded&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" data-hash="#{hash}" id="share-btn"><i class="fa fa-share-alt"></i>&nbsp;Share this result</a>
                           <table id="parse-result-summary">
                           <tr><td>Parsed file: </td><td class="value">#{uploading_filename}</td></tr>
                           <tr><td>File encoding: </td><td class="value">#{encoding}</td></tr>
@@ -57,6 +57,15 @@ en:
       caption: ERROR
       line: Line
       bytes: Bytes
+    share_dialog_html:
+      '
+      <div id="share-dialog">
+        <input type="text" readonly />
+        <p>
+        Copy this url to revisit this parse result page.
+        </p>
+      </div>
+      '
   about:
     description_html: '
       <p>About</p>

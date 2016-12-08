@@ -187,23 +187,6 @@ header {
     }
   }
 
-  #loader {
-    display: block;
-    position: fixed;
-    top: calc(50% - 60px);
-    left: calc(50% - 60px);
-    width: 120px;
-    height: 120px;
-    z-index: 100;
-  }
-
-  #download-file {
-    display: block;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-  }
-
   .cover {
     visibility: hidden;
     height: 0 !important;;
@@ -225,6 +208,44 @@ header {
     background-color: #fff;
     border: 1px solid #ddd;
     padding: 20px;
+  }
+}
+
+#cover-layer {
+  background-color: rgba(0,0,0, 0.5);
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 3000;
+
+  #share-dialog {
+    position: fixed;
+    padding: 45px 20px 0 20px;
+    height:120px;
+    width: 700px;
+    background-color: rgba(170, 170, 170, 0.5);
+
+    top: calc(50% - 50px);
+    left: calc(50% - 350px);
+    border-radius: 5px;
+
+    input {
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      padding: 3px;
+      height: 30px;
+      line-height: 30px;
+      display: block;
+      text-align: center;
+    }
+
+    p {
+      margin-top: 5px;
+      text-align: center;
+      font-size: 18px;
+      color: #FFF;
+      font-weight: bold;
+    }
   }
 }
 

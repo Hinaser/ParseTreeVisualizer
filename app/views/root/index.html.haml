@@ -19,7 +19,7 @@
           %i.famfamfam-flag-jp
 
 .container
-  #parsetree.pane.fade
+  #parsetree.pane.fade{data: {hash: @js_hash}}
     .ptree-header
       #dropzone
         = form_tag({action: :parse}, multipart: true, class: 'dropzone') do

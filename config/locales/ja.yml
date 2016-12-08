@@ -31,7 +31,7 @@ ja:
     milliseconds: ミリ秒
     rendering: 解析結果のHTMLをブラウザで生成中... 少し時間がかかります。(最大数分ほど)
     parse_result_html: '<p>
-                          解析木オブジェクトがページにロードされました。
+                          解析木オブジェクトがロードされました。&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" data-hash="#{hash}" id="share-btn"><i class="fa fa-share-alt"></i>&nbsp;この結果を共有する</a>
                           <table id="parse-result-summary">
                           <tr><td>解析ファイル: </td><td class="value">#{uploading_filename}</td></tr>
                           <tr><td>ファイルの文字コード: </td><td class="value">#{encoding}</td></tr>
@@ -57,6 +57,15 @@ ja:
       caption: エラー
       line: 行
       bytes: バイト目
+    share_dialog_html:
+      '
+      <div id="share-dialog">
+        <input type="text" readonly />
+        <p>
+        このURLでこのパース結果のページに再度アクセスできます。
+        </p>
+      </div>
+      '
   about:
     description_html: '
       <p>アバウト</p>

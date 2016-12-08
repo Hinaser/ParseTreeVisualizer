@@ -51,6 +51,30 @@ init_script = ->
       diff_server = null
       diff_client = null
       errorCount = null
+      current_file_id = null
+
+      refresh_share_btn = ->
+        share_btn = $('#share-btn')
+        share_btn.data('hash', current_file_id)
+        share_btn.on 'click', (e)->
+          e.preventDefault()
+          e.stopPropagation()
+          hash = $(this).data('hash')
+          share_link_url = "#{window.location.protocol}//#{window.location.host}/?name=#{hash}"
+
+          cover_layer = $('<div id="cover-layer">')
+          $('body').append(cover_layer)
+          dialog_box = i18n_text()['index']['share_dialog_html']
+          cover_layer.append(dialog_box)
+          input = cover_layer.find('input')
+          input.val(share_link_url)
+          input.select()
+
+          dismiss_dialog = (e)->
+            if !$(e.target).closest('#share-dialog').length
+              cover_layer.remove()
+
+          $(document).on 'click', dismiss_dialog
 
       refresh_i18n_text = ->
         $('.nav > li > .title').text(i18n_text()['title'])
@@ -92,6 +116,7 @@ init_script = ->
           parse_error.html(error_text)
           parse_error.addClass('in')
 
+        refresh_share_btn()
 
       $('.select-lang > a').on 'click', (e)->
         e.preventDefault()
@@ -106,6 +131,89 @@ init_script = ->
         cursorwidth: "10px"
         zindex: 20000
         hidecursordelay: 1000
+
+      parse_error = $('#parse-error')
+      dropzone_msg_area = $('#dropzone-msg')
+
+      render_parse_tree = (file_id, diff_server, encoding)->
+        dropzone_msg_area.removeClass('in')
+        setTimeout ->
+          if diff_server
+            dropzone_msg_area.html("<p>#{i18n_text()['index']['processing_time_in_server']} #{diff_server} #{i18n_text()['index']['milliseconds']}</p><p><img src='#{image_path('hourglass.gif')}'>#{i18n_text()['index']['rendering']}</p>")
+          else
+            dropzone_msg_area.html("<p><img src='#{image_path('hourglass.gif')}'>#{i18n_text()['index']['rendering']}</p>")
+          dropzone_msg_area.addClass('in')
+
+          setTimeout ->
+            $('#note').removeClass("cover")
+
+            start_time = +new Date()
+
+            script_cst = $('#parsetree_script')
+            if script_cst.length > 0
+              script_cst.remove()
+            $("head").append("<script id='parsetree_script' src='/js/#{file_id}'>")
+            CST.addRuleListener constructTreeView(CST, jQuery)
+            CST.walk()
+
+            $("#note").append(CST.treeView)
+
+            $(CST.treeViewRoot).addClass("collapsibleList")
+            CollapsibleLists.apply()
+            CollapsibleLists.openAll($(".collapsibleList").get(0))
+
+            end_time = +new Date()
+
+            uploading_filename = file_id unless uploading_filename
+            diff_client = end_time - start_time
+            errorCount = CST.errors().length
+            diff_server = Math.round(CST.summary.total_time * 1000)
+            file_encoding = CST.summary.encoding
+
+            dropzone_msg_area.removeClass('in')
+            setTimeout ->
+              dropzone_msg_area.empty()
+              result_text = i18n_text()['index']['parse_result_html']
+              result_text = result_text
+                .replace('#{uploading_filename}', uploading_filename)
+                .replace('#{encoding}', file_encoding)
+                .replace('#{diff_server}', diff_server)
+                .replace('#{diff_client}', diff_client)
+                .replace('#{errorCount}', errorCount)
+              result_msg = $('<div class="result-msg">')
+              result_msg.html(result_text)
+              dropzone_msg_area.append(result_msg)
+
+              ptree_desc = $('<div class="ptree-description">')
+              ptree_desc.html(i18n_text()['index']['what_is_parse_tree'])
+              dropzone_msg_area.append(ptree_desc)
+
+              dropzone_msg_area.addClass('in')
+
+              if errorCount > 0
+                error_text = """
+                    #{i18n_text()['index']['error']['caption']}<br />
+                    <table class='errors'>
+                    """
+                for val, i in CST.errors()
+                  escaped_msg = $('<div>').text(val.msg).html()
+                  error_text += """
+                      <tr><td>#{i18n_text()['index']['error']['line']}#{val.line}</td><td>#{val.pos}#{i18n_text()['index']['error']['bytes']}</td><td>#{escaped_msg}</td></tr>
+                      """
+
+                error_text += """
+                    </table>
+                    """
+
+                parse_error.html(error_text)
+                parse_error.addClass('in')
+
+              current_file_id = file_id
+              refresh_share_btn()
+            ,20
+          ,100
+        ,100
+
 
       # Initialize dropzone.js
       uploaded_file_id = null
@@ -127,21 +235,10 @@ init_script = ->
 
         init: ()->
           dropzone = this
-          message_area = $('#parse-result .message')
-          parse_area = $('#parse-result')
-          parse_error = $('#parse-error')
-          dropzone_msg_area = $('#dropzone-msg')
 
           start_time = 0
           end_time = 0
           uploading_filename = ''
-
-          reset_message_area = ->
-            message_area.empty()
-
-          onComplete = (file)->
-            dropzone.removeFile(file)
-            $('#loader').remove()
 
           this.on 'addedfile', (file) ->
             uploading_filename = file.name
@@ -155,89 +252,25 @@ init_script = ->
             $('#note').addClass('cover').empty()
 
           this.on 'success', (file, res)->
-            console.log res
             diff_server = Math.round(res.total_time * 1000)
             file_encoding = res.encoding
+            file_id = res.file
 
-            dropzone_msg_area.removeClass('in')
-            setTimeout ->
-              dropzone_msg_area.html("<p>#{i18n_text()['index']['processing_time_in_server']} #{diff_server} #{i18n_text()['index']['milliseconds']}</p><p><img src='#{image_path('hourglass.gif')}'>#{i18n_text()['index']['rendering']}</p>")
-              dropzone_msg_area.addClass('in')
+            render_parse_tree(file_id, diff_server, file_encoding)
 
-              setTimeout ->
-                $('#note').removeClass("cover")
-
-                start_time = +new Date()
-
-                reset_message_area()
-                file_id = res.file
-                onComplete(file)
-
-                script_cst = $('#CST')
-                if script_cst.length > 0
-                  script_cst.remove()
-                $("head").append("<script id ='CST' src='/js/#{file_id}'>")
-                CST.addRuleListener constructTreeView(CST, jQuery)
-                CST.walk()
-
-                $("#note").append(CST.treeView);
-
-                $(CST.treeViewRoot).addClass("collapsibleList");
-                CollapsibleLists.apply();
-                CollapsibleLists.openAll($(".collapsibleList").get(0));
-
-                end_time = +new Date()
-
-                diff_client = end_time - start_time
-                errorCount = CST.errors().length
-
-                dropzone_msg_area.removeClass('in')
-                setTimeout ->
-                  dropzone_msg_area.empty()
-                  result_text = i18n_text()['index']['parse_result_html']
-                  result_text = result_text
-                                  .replace('#{uploading_filename}', uploading_filename)
-                                  .replace('#{encoding}', file_encoding)
-                                  .replace('#{diff_server}', diff_server)
-                                  .replace('#{diff_client}', diff_client)
-                                  .replace('#{errorCount}', errorCount)
-                  result_msg = $('<div class="result-msg">')
-                  result_msg.html(result_text)
-                  dropzone_msg_area.append(result_msg)
-
-                  ptree_desc = $('<div class="ptree-description">')
-                  ptree_desc.html(i18n_text()['index']['what_is_parse_tree'])
-                  dropzone_msg_area.append(ptree_desc)
-
-                  dropzone_msg_area.addClass('in')
-
-                  if errorCount > 0
-                    error_text = """
-                    #{i18n_text()['index']['error']['caption']}<br />
-                    <table class='errors'>
-                    """
-                    for val, i in CST.errors()
-                      escaped_msg = $('<div>').text(val.msg).html()
-                      error_text += """
-                      <tr><td>#{i18n_text()['index']['error']['line']}#{val.line}</td><td>#{val.pos}#{i18n_text()['index']['error']['bytes']}</td><td>#{escaped_msg}</td></tr>
-                      """
-
-                    error_text += """
-                    </table>
-                    """
-
-                    parse_error.html(error_text)
-                    parse_error.addClass('in')
-                ,20
-              ,100
-            ,100
+            dropzone.removeFile(file) if file and dropzone
 
           this.on 'error', (file, error)->
-            reset_message_area()
             alert(error)
             $("#note").addClass("cover")
-            onComplete(file)
+            dropzone.removeFile(file)
+
+      # When parse tree file hash is specified render it
+      parsetree = $('#parsetree')
+      if parsetree.data('hash')
+        $('.nav > li > a[data-target=parsetree]').trigger('click')
+        setTimeout ->
+          render_parse_tree(parsetree.data('hash'))
+        ,200
 
 $(init_script)
-#$(document).on 'turbolinks:load', ->
-#  init_script()
