@@ -38,15 +38,82 @@ init_script = ->
     $('.nav > li.active').removeClass('active')
     $(this).parent().addClass('active')
 
+  translation = JSON.parse(gon.i18n)
+  i18n_text = ->
+    locale = $('body').attr('lang')
+    translation[locale]
 
   switch data_page
     when 'root:index'
+      # parameters being retrieved as a parse result
+      uploading_filename = null
+      diff_server = null
+      diff_client = null
+      errorCount = null
+
+      refresh_i18n_text = ->
+        $('.nav > li > .title').text(i18n_text()['title'])
+        $('.nav > li > a[data-target=about]').text(i18n_text()['menu']['about'])
+        $('.nav > li > a[data-target=parsetree]').text(i18n_text()['menu']['try'])
+        $('.dz-message > span').text(i18n_text()['index']['drophere'])
+
+        result_msg = $('.result-msg')
+        if result_msg.length > 0
+          result_text = i18n_text()['index']['parse_result_html']
+          result_text = result_text
+            .replace('#{uploading_filename}', uploading_filename)
+            .replace('#{diff_server}', diff_server)
+            .replace('#{diff_client}', diff_client)
+            .replace('#{errorCount}', errorCount)
+          result_msg.html(result_text)
+
+        ptree_desc = $('.ptree-description')
+        if ptree_desc.length > 0
+          ptree_desc.html(i18n_text()['index']['what_is_parse_tree'])
+
+        if errorCount > 0
+          error_text = """
+                  #{i18n_text()['index']['error']['caption']}<br />
+                  <table class='errors'>
+                  """
+          for val, i in CST.errors()
+            escaped_msg = $('<div />').text(val.msg).html()
+            error_text += """
+                    <tr><td>#{i18n_text()['index']['error']['line']}#{val.line}</td><td>#{val.pos}#{i18n_text()['index']['error']['bytes']}</td><td>#{escaped_msg}</td></tr>
+                    """
+
+          error_text += """
+                  </table>
+                  """
+
+          parse_error = $('#parse-error')
+          parse_error.html(error_text)
+          parse_error.addClass('in')
+
+
+      $('.select-lang > a').on 'click', (e)->
+        e.preventDefault()
+        target_lang = $(this).data('lang')
+        $('body').attr('lang', target_lang)
+        refresh_i18n_text()
+        false
+
       # Initialize nicescroll
       $('html').niceScroll
         autohidemode: true
         cursorwidth: "10px"
-        zIndex: 20000
+        zindex: 20000
         hidecursordelay: 1000
+
+      # Initialize tree description message
+      cst_description_html = """
+        <p>
+        F12の開発者ツールのコンソールで'CST'とタイプするとCSTオブジェクトの内容を直接確認できます<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;CST.errors():&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;解析エラーの一覧。<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;CST.tokens():&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;解析結果のトークンの一覧。<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;CST.tree():&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CSTの木構造(連結リスト)の本体のデータです
+        </p>
+      """
 
       # Initialize dropzone.js
       uploaded_file_id = null
@@ -61,7 +128,7 @@ init_script = ->
         autoDiscover: false
         autoProcessQueue: true
         addRemoveLinks: false
-        dictDefaultMessage: gon.i18n['drophere']
+        dictDefaultMessage: i18n_text()['index']['drophere']
         paramName: 'file'
         headers:
           'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
@@ -87,7 +154,7 @@ init_script = ->
           this.on 'addedfile', (file) ->
             uploading_filename = file.name
             dropzone_msg_area.empty()
-            dropzone_msg_area.append("<div id='comment'><img src='#{image_path('hourglass.gif')}'>#{gon.i18n['parsing']}</div>")
+            dropzone_msg_area.append("<div id='comment'><img src='#{image_path('hourglass.gif')}'>#{i18n_text()['index']['parsing']}</div>")
             dropzone_msg_area.addClass('in')
 
             parse_error.empty()
@@ -101,7 +168,7 @@ init_script = ->
 
             dropzone_msg_area.removeClass('in')
             setTimeout ->
-              dropzone_msg_area.html("<p>#{gon.i18n['processing_time_in_server']} #{diff_server} #{gon.i18n['milliseconds']}</p><p><img src='#{image_path('hourglass.gif')}'>#{gon.i18n['rendering']}</p>")
+              dropzone_msg_area.html("<p>#{i18n_text()['index']['processing_time_in_server']} #{diff_server} #{i18n_text()['index']['milliseconds']}</p><p><img src='#{image_path('hourglass.gif')}'>#{i18n_text()['index']['rendering']}</p>")
               dropzone_msg_area.addClass('in')
 
               setTimeout ->
@@ -130,7 +197,7 @@ init_script = ->
                 dropzone_msg_area.removeClass('in')
                 setTimeout ->
                   dropzone_msg_area.empty()
-                  result_text = gon.i18n['parse_result']
+                  result_text = i18n_text()['index']['parse_result_html']
                   result_text = result_text
                                   .replace('#{uploading_filename}', uploading_filename)
                                   .replace('#{diff_server}', diff_server)
@@ -141,20 +208,20 @@ init_script = ->
                   dropzone_msg_area.append(result_msg)
 
                   ptree_desc = $('<div class="ptree-description">')
-                  ptree_desc.html(gon.i18n['what_is_parse_tree'])
+                  ptree_desc.html(i18n_text()['index']['what_is_parse_tree'])
                   dropzone_msg_area.append(ptree_desc)
 
                   dropzone_msg_area.addClass('in')
 
                   if errorCount > 0
                     error_text = """
-                    #{gon.i18n['error_caption']}<br />
+                    #{i18n_text()['index']['error']['caption']}<br />
                     <table class='errors'>
                     """
                     for val, i in CST.errors()
                       escaped_msg = $('<div />').text(val.msg).html()
                       error_text += """
-                      <tr><td>#{gon.i18n['error_line']}#{val.line}</td><td>#{val.pos}#{gon.i18n['error_bytes']}</td><td>#{escaped_msg}</td></tr>
+                      <tr><td>#{i18n_text()['index']['error']['line']}#{val.line}</td><td>#{val.pos}#{i18n_text()['index']['error']['bytes']}</td><td>#{escaped_msg}</td></tr>
                       """
 
                     error_text += """
@@ -173,6 +240,6 @@ init_script = ->
             $("#note").addClass("cover")
             onComplete(file)
 
-$ init_script
-$(document).on 'turbolinks:load', ->
-  init_script()
+$(init_script)
+#$(document).on 'turbolinks:load', ->
+#  init_script()

@@ -47,9 +47,13 @@ header {
   }
 
   .select-lang {
-    float: right;
+    float: left;
     height: 50px;
     line-height: 50px;
+
+    a {
+      margin-left: 20px;
+    }
   }
 }
 

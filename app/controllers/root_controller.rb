@@ -13,6 +13,7 @@ class RootController < ApplicationController
   TREE_GENERATOR = Rails.root.join('lib', 'antlr4', 'bin', 'ParseTreeGenerator.exe').to_s
 
   def index
+=begin
     gon.i18n = {
       'drophere': I18n.t('index.drophere'),
       'parsing': I18n.t('index.parsing'),
@@ -25,6 +26,8 @@ class RootController < ApplicationController
       'error_line': I18n.t('index.error.line'),
       'error_bytes': I18n.t('index.error.bytes'),
     }
+=end
+    gon.i18n = I18n.backend.send(:translations).to_json
   end
 
   def parse

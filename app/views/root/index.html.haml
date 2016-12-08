@@ -7,15 +7,15 @@
     .container
       %ul.nav.navbar-nav
         %li
-          %span= t('title')
+          %span.title= t('title')
         %li.active
           %a.switch-pane{"data-target" => "about", :href => "#about"}= t('menu.about')
         %li
           %a.switch-pane{"data-target" => "parsetree", :href => "#parsetree"}= t('menu.try')
       .select-lang
-        =link_to root_path(locale: 'en') do
+        =link_to root_path(locale: 'en'), {data: {lang: 'en'}} do
           %i.famfamfam-flag-us
-        =link_to root_path(locale: 'ja') do
+        =link_to root_path(locale: 'ja'), {data: {lang: 'ja'}} do
           %i.famfamfam-flag-jp
 
 .container
