@@ -15,11 +15,13 @@ namespace :antlr4 do
       next
     end
 
-    output_dir = Rails.root.join('lib', 'antlr4', 'grammars', args[:grammar])
+    grammar = args[:grammar].downcase
+
+    output_dir = Rails.root.join('lib', 'antlr4', 'grammars', grammar)
     Dir.chdir(output_dir) do
       system("java -classpath #{G4_COMPILER_PATH} org.antlr.v4.Tool #{output_dir}/*.g4 -Dlanguage=CSharp_v4_5")
-      system("mcs -t:library -out:#{args[:grammar]}.grammar.dll -r:#{ANTLR4_RUNTIME_PATH} #{output_dir}/\\*.cs")
-      system("mv #{args[:grammar]}.grammar.dll #{ANTLR4_BIN_DIR}/")
+      system("mcs -t:library -out:#{grammar}.grammar.dll -r:#{ANTLR4_RUNTIME_PATH} #{output_dir}/\\*.cs")
+      system("mv #{grammar}.grammar.dll #{ANTLR4_BIN_DIR}/")
     end
   end
 
@@ -31,13 +33,15 @@ namespace :antlr4 do
       next
     end
 
-    # compile .g4 grammar file into .cs csharp file
-    Rake::Task['antlr4:compile_grammar'].invoke(args[:grammar])
+    grammar = args[:grammar].downcase
 
-    embed_grammar(args[:grammar])
+    # compile .g4 grammar file into .cs csharp file
+    Rake::Task['antlr4:compile_grammar'].invoke(grammar)
+
+    embed_grammar(grammar)
 
     Dir.chdir(ANTLR4_BIN_DIR) do
-      system("mcs -r:#{ANTLR4_RUNTIME_PATH},#{ANTLR4_BIN_DIR}/#{args[:grammar]}.grammar.dll -out:ParseTreeGenerator.exe #{ANTLR4_TOOLS_DIR}/\\*.cs")
+      system("mcs -r:#{ANTLR4_RUNTIME_PATH},#{ANTLR4_BIN_DIR}/#{grammar}.grammar.dll -out:ParseTreeGenerator.exe #{ANTLR4_TOOLS_DIR}/\\*.cs")
     end
   end
 
