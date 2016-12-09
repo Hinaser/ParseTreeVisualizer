@@ -34,34 +34,37 @@ class RootController < ApplicationController
       return render status: :unprocessable_entity, json: { 'message': 'Failed to process file' }
     end
 
-    input_file_path = file.path
-    sha256_input_file = Digest::SHA256.file(input_file_path)
-    sha256_tree_generator = Digest::SHA256.file(TREE_GENERATOR)
-    sha256sum = sha256_input_file.to_s[0,16] + sha256_tree_generator.to_s[0,16]
+    begin
+      input_file_path = file.path
+      sha256_input_file = Digest::SHA256.file(input_file_path)
+      sha256_tree_generator = Digest::SHA256.file(TREE_GENERATOR)
+      sha256sum = sha256_input_file.to_s[0,16] + sha256_tree_generator.to_s[0,16]
 
-    saved_input_file_path = Rails.root.join('tmp', 'ptree', sha256sum, 'source_file').to_s
-    output_file_dir = Rails.root.join('tmp', 'ptree', sha256sum).to_s
-    output_file_name_js = 'parsetree.js'
-    output_file_path_js = Rails.root.join('tmp', 'ptree', sha256sum, output_file_name_js).to_s
+      saved_input_file_path = Rails.root.join('tmp', 'ptree', sha256sum, 'source_file').to_s
+      output_file_dir = Rails.root.join('tmp', 'ptree', sha256sum).to_s
+      output_file_name_js = 'parsetree.js'
+      output_file_path_js = Rails.root.join('tmp', 'ptree', sha256sum, output_file_name_js).to_s
 
-    unless Dir.exists?(output_file_dir)
-      FileUtils::mkdir_p output_file_dir
-    end
+      unless Dir.exists?(output_file_dir)
+        FileUtils::mkdir_p output_file_dir
+      end
 
-    # Move posted file to rails tmp dir
-    FileUtils.mv(input_file_path, saved_input_file_path)
+      # Move posted file to rails tmp dir
+      FileUtils.mv(input_file_path, saved_input_file_path)
 
-    # Detect encoding
-    encoding = encoding_of(saved_input_file_path)
-    codepage = codepage_of(saved_input_file_path)
+      # Detect encoding
+      encoding = encoding_of(saved_input_file_path)
+      codepage = codepage_of(saved_input_file_path)
 
-    process_info = Benchmark.measure do
-      system("mono #{TREE_GENERATOR} #{saved_input_file_path} #{output_file_path_js} #{codepage}")
-    end
+      process_info = nil
 
-    # Save process summary
-    File.open(output_file_path_js, 'a') do |f|
-      summary = <<-HEREDOC
+      process_info = Benchmark.measure do
+        system("mono #{TREE_GENERATOR} #{saved_input_file_path} #{output_file_path_js} #{codepage}")
+      end
+
+      # Save process summary
+      File.open(output_file_path_js, 'a') do |f|
+        summary = <<-HEREDOC
 (function(global, factory){
   "use strict";
   factory(global);
@@ -70,16 +73,19 @@ class RootController < ApplicationController
 if(!global.CST) global.CST = {};
 global.CST.summary = {'encoding': '#{encoding}', 'total_time': #{process_info.total}, 'file': '#{sha256sum}'}
 });
-      HEREDOC
+        HEREDOC
 
-      f.write(summary)
+        f.write(summary)
+
+        render json: {
+            file: sha256sum,
+            total_time: process_info.total,
+            encoding: encoding
+        }
+      end
+    rescue
+      render status: :unprocessable_entity, json: { 'message': 'Parsing failed by server internal issue or bug' }
     end
-
-    render json: {
-      file: sha256sum,
-      total_time: process_info.total,
-      encoding: encoding
-    }
   end
 
   def js

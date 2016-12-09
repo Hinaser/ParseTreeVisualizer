@@ -261,7 +261,9 @@ init_script = ->
             dropzone.removeFile(file) if file and dropzone
 
           this.on 'error', (file, error)->
-            alert(error)
+            alert(error.message)
+            dropzone_msg_area.removeClass('in')
+            dropzone_msg_area.empty()
             $("#note").addClass("cover")
             dropzone.removeFile(file)
 
