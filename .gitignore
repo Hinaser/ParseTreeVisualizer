@@ -50,3 +50,4 @@ lib/antlr4/bin/ParseTreeGenerator.exe
 lib/antlr4/grammars/**/*.cs
 lib/antlr4/grammars/**/*.tokens
 lib/antlr4/tools/Program.cs
+config/locales/description.*.yml

@@ -1,4 +1,5 @@
 - page = 'index'
+- grammar = Settings.grammar['display_name']
 
 %header
   %a{:href => "https://github.com/you"}
@@ -6,7 +7,7 @@
   %nav.navbar.navbar-dark.navbar-static-top
     .container
       .page-title
-        =t('title', grammar: 'ASP')
+        =t('title', grammar: grammar)
       %ul.nav.navbar-nav
         %li.active
           %a.switch-pane{"data-target" => "about", :href => "#about"}= t('menu.about')
@@ -21,7 +22,7 @@
 .container
   #parsetree.pane.fade{data: {hash: @js_hash}}
     #preface
-      =t('index.preface_html', grammar: 'ASP')
+      =t('index.preface_html', grammar: grammar)
     .ptree-header
       #dropzone
         = form_tag({action: :parse}, multipart: true, class: 'dropzone') do

@@ -34,7 +34,7 @@ en:
     parsing: Upload completed. Generating parse tree in server...
     processing_time_in_server: 'Processing time in server: '
     milliseconds: milliseconds
-    rendering: Rendering generated parse tree... This may take long time.
+    rendering: Rendering generated parse tree... This may take a while.
     parse_result_html: '<p>
                           Parse tree object has been loaded&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" data-hash="#{hash}" id="share-btn"><i class="fa fa-share-alt"></i>&nbsp;Share this result</a>
                           <table id="parse-result-summary">
@@ -71,7 +71,3 @@ en:
         </p>
       </div>
       '
-  about:
-    description_html: '
-      <p>About</p>
-    '

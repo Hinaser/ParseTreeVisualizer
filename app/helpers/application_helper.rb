@@ -58,5 +58,8 @@ module ApplicationHelper
     [namespace, controller.controller_name, controller.action_name].compact.join('-')
   end
 
+  def grammar
+    Settings.grammar['display_name']
+  end
 end
 

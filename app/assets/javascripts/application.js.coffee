@@ -81,6 +81,7 @@ init_script = ->
         $('.nav > li > a[data-target=about]').text(i18n_text()['menu']['about'])
         $('.nav > li > a[data-target=parsetree]').text(i18n_text()['menu']['try'])
         $('#preface').html(i18n_text()['index']['preface_html'])
+        $('#about > .description').html(i18n_text()['about']['description_html'])
         $('.dz-message > span').text(i18n_text()['index']['drophere'])
 
         result_msg = $('.result-msg')
