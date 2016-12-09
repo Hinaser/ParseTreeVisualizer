@@ -15,8 +15,7 @@ class RootController < ApplicationController
   TREE_GENERATOR = Rails.root.join('lib', 'antlr4', 'bin', 'ParseTreeGenerator.exe').to_s
 
   def index
-    grammar = Settings.grammar
-    grammar.upcase!
+    grammar = Settings.grammar['display_name']
 
     i18n_text = I18n.backend.send(:translations)
     i18n_text[:en][:index][:preface_html].gsub!('%{grammar}', grammar)

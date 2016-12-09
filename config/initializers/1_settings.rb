@@ -3,5 +3,10 @@ class Settings < Settingslogic
   namespace Rails.env
 end
 
-Settings['grammar'] ||= 'ASP'
-Settings['grammar'].downcase!
+Settings['grammar'] ||= Settingslogic.new({})
+
+if Settings.grammar['name'].blank? or Settings.grammar['display_name'].blank?
+  raise 'Configuration missing. Please create config/application.yml and set name and display name of a target grammar'
+end
+
+Settings.grammar['name'].downcase!

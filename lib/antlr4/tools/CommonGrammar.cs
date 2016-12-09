@@ -371,9 +371,9 @@ namespace ParseTreeVisualizer
 
             // Token names
             IVocabulary vocabulary = Lexer.Vocabulary;
-            for (int i = 0; i < vocabulary.MaxTokenType; i++)
+            for (int i = 0; i <= vocabulary.MaxTokenType; i++)
             {
-                if (i < vocabulary.MaxTokenType - 1)
+                if (i < vocabulary.MaxTokenType)
                 {
                     sb.AppendFormat("{0}\"{1}\",{2}", "\t", vocabulary.GetSymbolicName(i), "\n");
                 }

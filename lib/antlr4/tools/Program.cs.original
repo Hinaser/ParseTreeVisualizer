@@ -36,6 +36,7 @@ namespace ParseTreeVisualizer
                 grammar.Initialize<CUSTOM_LEXER, CUSTOM_PARSER>(inputFilePath, codePage);
                 grammar.Parse();
                 grammar.WriteParseTree(outputFilePath, codePage);
+                grammar.WriteTokenList(outputFilePath + ".tokens", codePage);
             }
             catch (Exception e)
             {

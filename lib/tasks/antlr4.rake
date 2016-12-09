@@ -9,13 +9,14 @@ namespace :antlr4 do
 
   desc 'Compile grammar file into csharp file and dll'
   task :compile_grammar, [:grammar] do |t, args|
-    if args[:grammar].blank?
+    unless args[:grammar].present? and args[:grammar] =~ /\A[a-zA-Z0-9\-_]+\z/
       puts 'Usage: rake antlr4:compile_grammar[<grammar>]'
-      puts '  <grammar>: Name of grammar.'
+      puts '  <grammar>: Name of grammar. Name chars are restricted to alphabet, digit, hyphen, underscore.'
       next
     end
 
-    grammar = args[:grammar].downcase
+    grammar = args[:grammar]
+    grammar.downcase!
 
     output_dir = Rails.root.join('lib', 'antlr4', 'grammars', grammar)
     Dir.chdir(output_dir) do
@@ -26,14 +27,15 @@ namespace :antlr4 do
   end
 
   desc 'Compile grammar analyzer tool'
-  task :compile_tool, [:grammar] do |t, args|
-    if args[:grammar].blank?
+  task :compile, [:grammar] do |t, args|
+    unless args[:grammar].present? and args[:grammar] =~ /\A[a-zA-Z0-9\-_]+\z/
       puts 'Usage: rake antlr4:compile_tool[<grammar>]'
-      puts '  <grammar>: Name of grammar.'
+      puts '  <grammar>: Name of grammar. Name chars are restricted to alphabet, digit, hyphen, underscore.'
       next
     end
 
-    grammar = args[:grammar].downcase
+    grammar = args[:grammar]
+    grammar.downcase!
 
     # compile .g4 grammar file into .cs csharp file
     Rake::Task['antlr4:compile_grammar'].invoke(grammar)
@@ -56,9 +58,25 @@ namespace :antlr4 do
 
   # Replace lexer/parser type string to specified one
   def embed_grammar(grammar)
+    require 'parse_tree_visualizer/popen'
+
+    grammar_dir = Rails.root.join('lib', 'antlr4', 'grammars', grammar).to_s
+    lexer = ::ParseTreeVisualizer::Popen.popen(%W(find . -name *Lexer.cs), grammar_dir)
+    parser = ::ParseTreeVisualizer::Popen.popen(%W(find . -name *Parser.cs), grammar_dir)
+
+    if lexer.blank? or parser.blank? or lexer[0].blank? or parser[0].blank?
+      raise 'Error: Lexer or Parser cs file not found'
+    end
+
+    lexer = lexer[0].gsub(/\A\.\//, '')
+    parser = parser[0].gsub(/\A\.\//, '')
+
+    lexer = lexer[0, lexer.length - '.cs'.length - 1]
+    parser = parser[0, parser.length - '.cs'.length - 1]
+
     modifying_src = File.read(ORG_PROGRAM_CS_PATH)
-    modifying_src.gsub!(/CUSTOM_LEXER/, "#{grammar.upcase}Lexer")
-    modifying_src.gsub!(/CUSTOM_PARSER/, "#{grammar.upcase}Parser")
+    modifying_src.gsub!(/CUSTOM_LEXER/, lexer)
+    modifying_src.gsub!(/CUSTOM_PARSER/, parser)
 
     File.open(PROGRAM_CS_PATH, 'w') do |out|
       out << modifying_src

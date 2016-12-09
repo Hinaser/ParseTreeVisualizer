@@ -1,5 +1,7 @@
 defaults: &defaults
-  grammar: 'asp'
+  grammar:
+    name: 'asp'
+    display_name: 'ASP'
 
 development:
   <<: *defaults
