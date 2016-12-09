@@ -6,6 +6,7 @@ require 'json'
 require 'fileutils'
 require 'charlock_holmes'
 require 'benchmark'
+require "filemagic"
 
 class RootController < ApplicationController
   layout 'application'
@@ -39,6 +40,10 @@ class RootController < ApplicationController
 
     unless File.exists?(file.path)
       return render status: :unprocessable_entity, json: { 'message': 'Failed to process file' }
+    end
+
+    if binary?(file.path)
+      return render status: :unprocessable_entity, json: { 'message': 'Cannot parse binary file' }
     end
 
     begin
@@ -262,5 +267,14 @@ global.CST.summary = {'encoding': '#{encoding}', 'total_time': #{process_info.to
     return '' if encoding.blank?
 
     CODEPAGE_MAP[encoding.upcase.to_sym]
+  end
+
+  def binary?(filename)
+    begin
+      fm= FileMagic.new(FileMagic::MAGIC_MIME)
+      !(fm.file(filename)=~ /^text\//)
+    ensure
+      fm.close
+    end
   end
 end

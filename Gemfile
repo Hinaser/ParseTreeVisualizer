@@ -69,6 +69,7 @@ gem 'addressable'
 gem 'nokogiri', '~> 1.6.7', '>= 1.6.7.2'
 
 gem 'charlock_holmes'
+gem 'ruby-filemagic'
 
 gem 'browser'
 
