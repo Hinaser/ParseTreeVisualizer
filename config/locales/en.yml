@@ -20,11 +20,16 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  title: Parse Tree Visualizer
+  title: '%{grammar} Parse Tree Visualizer'
   menu:
     try: Try parse
     about: About
   index:
+    preface_html: '
+      <div>
+        This visualizer constructs parse tree based on <span style="font-weight: bold; color: red;">%{grammar}</span> grammar.<br />
+      </div>
+    '
     drophere: Drag and Drop a file here to parse
     parsing: Upload completed. Generating parse tree in server...
     processing_time_in_server: 'Processing time in server: '

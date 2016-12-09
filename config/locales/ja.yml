@@ -20,11 +20,16 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 ja:
-  title: 解析木ビューワ
+  title: '%{grammar}解析木ビューワ'
   menu:
     try: 解析トライ
     about: アバウト
   index:
+    preface_html: '
+      <div>
+        アップロードされたテキストファイルを<span style="font-weight: bold; color: red;">%{grammar}</span>の文法にしたがって解析し、解析木を表示します。<br />
+      </div>
+    '
     drophere: 解析するファイルをドラッグ＆ドロップしてください
     parsing: アップロード完了。サーバで解析木作成中...
     processing_time_in_server: 'サーバでの解析処理時間:'

@@ -15,7 +15,14 @@ class RootController < ApplicationController
   TREE_GENERATOR = Rails.root.join('lib', 'antlr4', 'bin', 'ParseTreeGenerator.exe').to_s
 
   def index
-    gon.i18n = I18n.backend.send(:translations).to_json
+    grammar = ParseTreeVisualizer::GRAMMAR
+
+    i18n_text = I18n.backend.send(:translations)
+    i18n_text[:en][:index][:preface_html].gsub!('%{grammar}', grammar)
+    i18n_text[:ja][:index][:preface_html].gsub!('%{grammar}', grammar)
+    i18n_text[:en][:title].gsub!('%{grammar}', grammar)
+    i18n_text[:ja][:title].gsub!('%{grammar}', grammar)
+    gon.i18n = i18n_text.to_json
 
     js_hash = params[:name]
     if js_hash.present? and /\A[a-zA-Z0-9]+\z/.match(js_hash)

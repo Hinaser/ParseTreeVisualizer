@@ -20,29 +20,32 @@ header {
     border-color: e7e7e7;
   }
 
-  .navbar > .container > ul.nav {
-    li.active > a {
-      background-color: #9A9A9A;
-    }
-
-    li > a {
-      color: #FFF;
-    }
-
-    li > a:hover {
-      background-color: #DEDEDE;
-      @include transition(all ease 0.3s 0s);
-      color: #696969;
-    }
-
-    li > span {
-      padding: 15px 15px;
+  .navbar > .container {
+    > .page-title {
+      float: left;
+      padding: 15px 15px 15px 0;
       line-height: 20px;
       position: relative;
       display: block;
       color: #FFF;
-      width: 240px;
       font-size: 18px;
+      margin-right: 30px;
+    }
+
+    > ul.nav {
+      li.active > a {
+        background-color: #9A9A9A;
+      }
+
+      li > a {
+        color: #FFF;
+      }
+
+      li > a:hover {
+        background-color: #DEDEDE;
+        @include transition(all ease 0.3s 0s);
+        color: #696969;
+      }
     }
   }
 
@@ -59,6 +62,10 @@ header {
 
 #parsetree {
   margin-bottom: 15px;
+
+  #preface {
+    margin-bottom: 15px;
+  }
 
   .ptree-header {
     #dropzone-msg {
