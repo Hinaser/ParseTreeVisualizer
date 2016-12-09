@@ -44,3 +44,9 @@ rails_best_practices_output.html
 /tags
 tmp/
 vendor/bundle/*
+
+lib/antlr4/bin/*.grammar.dll
+lib/antlr4/bin/ParseTreeGenerator.exe
+lib/antlr4/grammars/**/*.cs
+lib/antlr4/grammars/**/*.tokens
+lib/antlr4/tools/Program.cs
