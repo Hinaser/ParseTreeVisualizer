@@ -68,6 +68,9 @@ class RootController < ApplicationController
       encoding = encoding_of(saved_input_file_path)
       codepage = codepage_of(saved_input_file_path)
 
+      # Get file size
+      file_size, line_counts = filesize_of(saved_input_file_path)
+
       process_info = nil
 
       process_info = Benchmark.measure do
@@ -83,7 +86,13 @@ class RootController < ApplicationController
 })(window, function(global){
 "use strict";
 if(!global.CST) global.CST = {};
-global.CST.summary = {'encoding': '#{encoding}', 'total_time': #{process_info.total}, 'file': '#{sha256sum}'}
+  global.CST.summary = {
+    'file': '#{sha256sum}',
+    'total_time': #{process_info.total},
+    'encoding': '#{encoding}',
+    'size': #{file_size},
+    'line': #{line_counts}
+  }
 });
         HEREDOC
 
@@ -92,7 +101,9 @@ global.CST.summary = {'encoding': '#{encoding}', 'total_time': #{process_info.to
         render json: {
             file: sha256sum,
             total_time: process_info.total,
-            encoding: encoding
+            encoding: encoding,
+            size: file_size,
+            line: line_counts
         }
       end
     rescue
@@ -267,6 +278,12 @@ global.CST.summary = {'encoding': '#{encoding}', 'total_time': #{process_info.to
     return '' if encoding.blank?
 
     CODEPAGE_MAP[encoding.upcase.to_sym]
+  end
+
+  def filesize_of(file)
+    size = File.size(file)
+    lines = File.read(file).lines.count
+    [size, lines]
   end
 
   def binary?(filename)

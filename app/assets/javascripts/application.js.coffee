@@ -17,6 +17,9 @@
 #= require jquery.nicescroll
 #= require_tree .
 
+number_with_commas = (x) ->
+  x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
 init_script = ->
   data_page = $("body").data('page')
 
@@ -51,6 +54,8 @@ init_script = ->
       diff_server = null
       diff_client = null
       errorCount = null
+      file_size = null
+      file_lines = null
       current_file_id = null
 
       refresh_share_btn = ->
@@ -93,6 +98,8 @@ init_script = ->
             .replace('#{diff_server}', diff_server)
             .replace('#{diff_client}', diff_client)
             .replace('#{errorCount}', errorCount)
+            .replace('#{file_size}', number_with_commas(file_size))
+            .replace('#{file_lines}', file_lines)
           result_msg.html(result_text)
 
         ptree_desc = $('.ptree-description')
@@ -154,7 +161,16 @@ init_script = ->
             script_cst = $('#parsetree_script')
             if script_cst.length > 0
               script_cst.remove()
-            $("head").append("<script id='parsetree_script' src='/js/#{file_id}'>")
+
+            try
+              $("head").append("<script id='parsetree_script' src='/js/#{file_id}'>")
+              throw 'CST not loaded exception' if !CST
+            catch e
+              $('#note').addClass("cover")
+              dropzone_msg_area.empty()
+              alert('File not found. CST failed to be loaded.')
+              return
+
             CST.addRuleListener constructTreeView(CST, jQuery)
             CST.walk()
 
@@ -171,6 +187,8 @@ init_script = ->
             errorCount = CST.errors().length
             diff_server = Math.round(CST.summary.total_time * 1000)
             file_encoding = CST.summary.encoding
+            file_size = CST.summary.size
+            file_lines = CST.summary.line
 
             dropzone_msg_area.removeClass('in')
             setTimeout ->
@@ -182,6 +200,8 @@ init_script = ->
                 .replace('#{diff_server}', diff_server)
                 .replace('#{diff_client}', diff_client)
                 .replace('#{errorCount}', errorCount)
+                .replace('#{file_size}', number_with_commas(file_size))
+                .replace('#{file_lines}', file_lines)
               result_msg = $('<div class="result-msg">')
               result_msg.html(result_text)
               dropzone_msg_area.append(result_msg)
