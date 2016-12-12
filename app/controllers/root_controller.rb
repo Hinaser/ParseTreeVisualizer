@@ -23,6 +23,8 @@ class RootController < ApplicationController
     i18n_text[:ja][:index][:preface_html].gsub!('%{grammar}', grammar)
     i18n_text[:en][:title].gsub!('%{grammar}', grammar)
     i18n_text[:ja][:title].gsub!('%{grammar}', grammar)
+    i18n_text[:en][:about][:description_html].gsub!('%{parse_tree_sample}', view_context.image_url('parse_tree_sample.png'))
+    i18n_text[:ja][:about][:description_html].gsub!('%{parse_tree_sample}', view_context.image_url('parse_tree_sample.png'))
     gon.i18n = i18n_text.to_json
 
     js_hash = params[:name]

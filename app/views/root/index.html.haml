@@ -50,5 +50,5 @@
 
   #about.pane.fade.active.in
     .description
-      = t('about.description_html')
+      ~ t('about.description_html', parse_tree_sample: image_url('parse_tree_sample.png'))
 
