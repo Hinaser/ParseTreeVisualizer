@@ -147,11 +147,11 @@ init_script = ->
       parse_error = $('#parse-error')
       dropzone_msg_area = $('#dropzone-msg')
 
-      render_parse_tree = (file_id, diff_server, encoding)->
+      render_parse_tree = (file_id, time_at_server, encoding)->
         dropzone_msg_area.removeClass('in')
         setTimeout ->
-          if diff_server
-            dropzone_msg_area.html("<p>#{i18n_text()['index']['processing_time_in_server']} #{diff_server} #{i18n_text()['index']['milliseconds']}</p><p><img src='#{image_path('hourglass.gif')}'>#{i18n_text()['index']['rendering']}</p>")
+          if time_at_server
+            dropzone_msg_area.html("<p>#{i18n_text()['index']['processing_time_in_server']} #{time_at_server} #{i18n_text()['index']['milliseconds']}</p><p><img src='#{image_path('hourglass.gif')}'>#{i18n_text()['index']['rendering']}</p>")
           else
             dropzone_msg_area.html("<p><img src='#{image_path('hourglass.gif')}'>#{i18n_text()['index']['rendering']}</p>")
           dropzone_msg_area.addClass('in')
