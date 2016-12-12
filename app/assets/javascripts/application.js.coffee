@@ -67,19 +67,22 @@ init_script = ->
           hash = $(this).data('hash')
           share_link_url = "#{window.location.protocol}//#{window.location.host}/?name=#{hash}"
 
-          cover_layer = $('<div id="cover-layer">')
+          cover_layer = $('<div id="cover-layer" class="fade">')
           $('body').append(cover_layer)
-          dialog_box = i18n_text()['index']['share_dialog_html']
-          cover_layer.append(dialog_box)
-          input = cover_layer.find('input')
-          input.val(share_link_url)
-          input.select()
+          setTimeout ->
+            cover_layer.addClass('in')
+            dialog_box = i18n_text()['index']['share_dialog_html']
+            cover_layer.append(dialog_box)
+            input = cover_layer.find('input')
+            input.val(share_link_url)
+            input.select()
 
-          dismiss_dialog = (e)->
-            if !$(e.target).closest('#share-dialog').length
-              cover_layer.remove()
+            dismiss_dialog = (e)->
+              if !$(e.target).closest('#share-dialog').length
+                cover_layer.remove()
 
-          $(document).on 'click', dismiss_dialog
+            $(document).on 'click', dismiss_dialog
+          ,200
 
       refresh_i18n_text = ->
         $('.page-title').text(i18n_text()['title'])
