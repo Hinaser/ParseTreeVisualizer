@@ -38,7 +38,7 @@ ja:
     parse_result_html: '<p>
                           解析木オブジェクトがロードされました。&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" data-hash="#{hash}" id="share-btn"><i class="fa fa-share-alt"></i>&nbsp;この結果を共有する</a>
                           <table id="parse-result-summary">
-                          <tr><td>解析ファイル: </td><td class="value">#{uploading_filename}</td><td></td><td></td></tr></tr>
+                          <tr><td>解析ファイル: </td><td class="value" colspan="3">#{uploading_filename}</td></tr>
                           <tr><td>ファイルの文字コード: </td><td class="value">#{encoding}</td><td>ファイルサイズ:</td><td class="value">#{file_size} バイト</td></tr>
                           <tr><td>サーバでの解析処理時間:</td><td class="value">#{diff_server} ミリ秒</td><td>行数:</td><td class="value">#{file_lines} 行</td></tr>
                           <tr><td>ブラウザの描画処理時間:</td><td class="value">#{diff_client} ミリ秒</td><td>エラー数:</td><td class="value">#{errorCount}</td></tr>

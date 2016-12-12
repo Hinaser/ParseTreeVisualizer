@@ -65,7 +65,7 @@ init_script = ->
           e.preventDefault()
           e.stopPropagation()
           hash = $(this).data('hash')
-          share_link_url = "#{window.location.protocol}//#{window.location.host}/?name=#{hash}"
+          share_link_url = "#{window.location.protocol}//#{window.location.host}/#{$('body').attr('lang')}/?name=#{hash}"
 
           cover_layer = $('<div id="cover-layer" class="fade">')
           $('body').append(cover_layer)
