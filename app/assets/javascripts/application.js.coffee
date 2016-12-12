@@ -27,7 +27,24 @@ init_script = ->
   $('.switch-pane').on 'click', (e)->
     e.preventDefault()
     target = $(this).data('target')
-    active_pane = $('.pane.fade.active.in')
+    active_pane = $('.container > .pane.fade.active.in')
+    active_pane.removeClass 'in'
+
+    setTimeout(()->
+      active_pane.removeClass('active')
+      $("#" + target).addClass('active')
+      setTimeout(()->
+        $("#" + target).addClass('in')
+      , 100)
+    , 100)
+
+    $('.nav > li.active').removeClass('active')
+    $(this).parent().addClass('active')
+
+  $('.switch-grammar').on 'click', (e)->
+    e.preventDefault()
+    target = $(this).data('target')
+    active_pane = $('#grammar .pane.fade.active.in')
     active_pane.removeClass 'in'
 
     setTimeout(()->
@@ -87,10 +104,14 @@ init_script = ->
       refresh_i18n_text = ->
         $('.page-title').text(i18n_text()['title'])
         $('.nav > li > a[data-target=about]').text(i18n_text()['menu']['about'])
+        $('.nav > li > a[data-target=grammar]').text(i18n_text()['menu']['grammar'])
         $('.nav > li > a[data-target=parsetree]').text(i18n_text()['menu']['try'])
         $('#preface').html(i18n_text()['index']['preface_html'])
         $('#about > .description').html(i18n_text()['about']['description_html'])
         $('.dz-message > span').text(i18n_text()['index']['drophere'])
+        $('.switch-grammar[data-target="lexer-rule"]').text(i18n_text()['index']['grammar']['lexer'])
+        $('.switch-grammar[data-target="parser-rule"]').text(i18n_text()['index']['grammar']['parser'])
+        $('.switch-grammar[data-target="combined-rule"]').text(i18n_text()['index']['grammar']['combined'])
 
         result_msg = $('.result-msg')
         if result_msg.length > 0

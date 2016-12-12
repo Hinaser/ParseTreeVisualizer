@@ -23,6 +23,7 @@ ja:
   title: '%{grammar}解析木ビューワ'
   menu:
     try: 解析トライ
+    grammar: 文法定義
     about: アバウト
   upload_error:
     file_was:
@@ -31,6 +32,10 @@ ja:
       empty: '0バイトファイルはパースできません。'
       binary: 'バイナリファイルはパースできません。'
   index:
+    grammar:
+      lexer: 字句解析ルール
+      parser: 構文解析ルール
+      combined: 字句/構文解析ルール
     preface_html: '
       <div>
         アップロードされたテキストファイルを<span style="font-weight: bold; color: red;">%{grammar}</span>の文法にしたがって解析し、解析木を表示します。<br />

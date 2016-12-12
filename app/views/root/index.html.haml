@@ -12,6 +12,8 @@
         %li.active
           %a.switch-pane{"data-target" => "about", :href => "#about"}= t('menu.about')
         %li
+          %a.switch-pane{"data-target" => "grammar", :href => "#grammar"}= t('menu.grammar')
+        %li
           %a.switch-pane{"data-target" => "parsetree", :href => "#parsetree"}= t('menu.try')
       .select-lang
         =link_to root_path(locale: 'en'), {data: {lang: 'en'}} do
@@ -20,6 +22,29 @@
           %i.famfamfam-flag-jp
 
 .container
+  #about.pane.fade.active.in
+    .description
+      ~ t('about.description_html', parse_tree_sample: image_url('parse_tree_sample.png'))
+  #grammar.pane.fade
+    - if @lexer_rule.present?
+      %button.btn.btn-success.switch-grammar{data: {target: 'lexer-rule'}}=t('index.grammar.lexer')
+    - if @parser_rule.present?
+      %button.btn.btn-info.switch-grammar{data: {target: 'parser-rule'}}=t('index.grammar.parser')
+    - if @combined_rule.present?
+      %button.btn.btn-warning.switch-grammar{data: {target: 'combined-rule'}}=t('index.grammar.combined')
+    %hr
+    - if @lexer_rule.present?
+      %pre.pane.fade.in.active#lexer-rule=@lexer_rule
+    - if @parser_rule.present?
+      - if @lexer_rule.blank?
+        %pre.pane.fade.in.active#parser-rule=@parser_rule
+      -else
+        %pre.pane.fade#parser-rule=@parser_rule
+    - if @combined_rule.present?
+      - if @lexer_rule.blank? and @parser_rule.blank?
+        %pre.pane.fade.in.active#combined-rule=@combined_rule
+      -else
+        %pre.pane.fade#combined-rule=@combined_rule
   #parsetree.pane.fade{data: {hash: @js_hash}}
     #preface
       =t('index.preface_html', grammar: grammar)
@@ -47,8 +72,4 @@
       #dropzone-msg.fade
       #parse-error.fade
     #note.cover
-
-  #about.pane.fade.active.in
-    .description
-      ~ t('about.description_html', parse_tree_sample: image_url('parse_tree_sample.png'))
 

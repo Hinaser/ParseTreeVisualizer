@@ -23,6 +23,7 @@ en:
   title: '%{grammar} Parse Tree Visualizer'
   menu:
     try: Try parse
+    grammar: Grammar
     about: About
   upload_error:
     file_was:
@@ -31,6 +32,10 @@ en:
       empty: '0 byte file cannot be parsed'
       binary: 'Binary file cannot be parsed'
   index:
+    grammar:
+      lexer: Lexer rule
+      parser: Parser rule
+      combined: Lexer/Parser rule
     preface_html: '
       <div>
         This visualizer constructs parse tree based on <span style="font-weight: bold; color: red;">%{grammar}</span> grammar.<br />

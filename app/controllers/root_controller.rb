@@ -9,6 +9,7 @@ require 'benchmark'
 require "filemagic"
 
 class RootController < ApplicationController
+  include ParseTreeVisualizer
   layout 'application'
 
   skip_before_action :verify_authenticity_token
@@ -26,6 +27,10 @@ class RootController < ApplicationController
     i18n_text[:en][:about][:description_html].gsub!('%{parse_tree_sample}', view_context.image_url('parse_tree_sample.png'))
     i18n_text[:ja][:about][:description_html].gsub!('%{parse_tree_sample}', view_context.image_url('parse_tree_sample.png'))
     gon.i18n = i18n_text.to_json
+
+    @lexer_rule = lexer_rule
+    @parser_rule = parser_rule
+    @combined_rule = combined_rule
 
     js_hash = params[:name]
     if js_hash.present? and /\A[a-zA-Z0-9]+\z/.match(js_hash)
