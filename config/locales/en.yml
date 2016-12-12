@@ -24,6 +24,12 @@ en:
   menu:
     try: Try parse
     about: About
+  upload_error:
+    file_was:
+      not_found: 'You must upload file to parse'
+      lost: 'Server internal error. Uploaded file was lost'
+      empty: '0 byte file cannot be parsed'
+      binary: 'Binary file cannot be parsed'
   index:
     preface_html: '
       <div>
@@ -67,5 +73,10 @@ en:
         <p>
         Copy this url to revisit this parse result page.
         </p>
+      </div>
+      '
+    error_dialog_html:
+      '
+      <div id="error-dialog">
       </div>
       '

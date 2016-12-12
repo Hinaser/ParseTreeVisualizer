@@ -35,15 +35,13 @@ class RootController < ApplicationController
     file = params[:file]
 
     if file.blank?
-      return render status: :unprocessable_entity, json: {'message': 'Invalid file'}
-    end
-
-    unless File.exists?(file.path)
-      return render status: :unprocessable_entity, json: { 'message': 'Failed to process file' }
-    end
-
-    if binary?(file.path)
-      return render status: :unprocessable_entity, json: { 'message': 'Cannot parse binary file' }
+      return render status: :unprocessable_entity, json: {'message': 'upload_error.file_was.not_found'}
+    elsif not File.exists?(file.path)
+      return render status: :unprocessable_entity, json: { 'message': 'upload_error.file_was.lost' }
+    elsif File.size(file.path) == 0
+      return render status: :unprocessable_entity, json: { 'message': 'upload_error.file_was.empty'}
+    elsif binary?(file.path)
+      return render status: :unprocessable_entity, json: { 'message': 'upload_error.file_was.binary' }
     end
 
     begin

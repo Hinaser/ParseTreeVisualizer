@@ -224,7 +224,7 @@ header {
   top: 0; right: 0; bottom: 0; left: 0;
   z-index: 3000;
 
-  #share-dialog {
+  #share-dialog, #error-dialog {
     position: fixed;
     padding: 45px 20px 0 20px;
     height:120px;
@@ -253,6 +253,12 @@ header {
       color: #FFF;
       font-weight: bold;
     }
+  }
+
+  #error-dialog {
+    color: #FFF;
+    text-align: center;
+    font-size: 18px;
   }
 }
 

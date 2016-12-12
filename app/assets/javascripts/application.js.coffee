@@ -239,6 +239,22 @@ init_script = ->
           ,100
         ,100
 
+      # Upload error handling process
+      show_error_dialog = (msg)->
+        cover_layer = $('<div id="cover-layer" class="fade">')
+        $('body').append(cover_layer)
+        setTimeout ->
+          cover_layer.addClass('in')
+          dialog_box = $(i18n_text()['index']['error_dialog_html'])
+          dialog_box.text(msg)
+          cover_layer.append(dialog_box)
+
+          dismiss_dialog = (e)->
+            if !$(e.target).closest('#error-dialog').length
+              cover_layer.remove()
+
+          $(document).on 'click', dismiss_dialog
+        ,200
 
       # Initialize dropzone.js
       uploaded_file_id = null
@@ -286,7 +302,8 @@ init_script = ->
             dropzone.removeFile(file) if file and dropzone
 
           this.on 'error', (file, error)->
-            alert(error.message)
+            error_id = error.message.split('.')
+            show_error_dialog(i18n_text()[error_id[0]][error_id[1]][error_id[2]])
             dropzone_msg_area.removeClass('in')
             dropzone_msg_area.empty()
             $("#note").addClass("cover")

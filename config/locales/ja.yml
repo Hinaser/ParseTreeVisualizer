@@ -24,6 +24,12 @@ ja:
   menu:
     try: 解析トライ
     about: アバウト
+  upload_error:
+    file_was:
+      not_found: 'ファイルがアップロードされていません。'
+      lost: 'サーバ内部エラー。ファイルがロストしました。'
+      empty: '0バイトファイルはパースできません。'
+      binary: 'バイナリファイルはパースできません。'
   index:
     preface_html: '
       <div>
@@ -67,5 +73,10 @@ ja:
         <p>
         このURLでこのパース結果のページに再度アクセスできます。
         </p>
+      </div>
+      '
+    error_dialog_html:
+      '
+      <div id="error-dialog">
       </div>
       '
