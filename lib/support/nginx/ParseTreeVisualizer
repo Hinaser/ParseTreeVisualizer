@@ -1,0 +1,81 @@
+## Parse Tree Visualizer
+##
+## Lines starting with two hashes (##) are comments with information.
+## Lines starting with one hash (#) are configuration parameters that can be uncommented.
+##
+
+upstream ParseTreeVisualizer {
+  server unix:/home/admin/projects/ParseTreeVisualizer/tmp/sockets/ParseTreeVisualizer.sock fail_timeout=0;
+}
+
+## Normal HTTP host
+server {
+  ## Either remove "default_server" from the listen line below,
+  ## or delete the /etc/nginx/sites-enabled/default file. This will cause sawyer
+  ## to be served if you visit any address that your server responds to, eg.
+  ## the ip address of the server (http://x.x.x.x/)n 0.0.0.0:80 default_server;
+  listen 0.0.0.0:80 default_server;
+  listen [::]:80 default_server;
+  server_name YOUR_SERVER_FQDN; ## Replace this with something like xxx.example.com
+  server_tokens off; ## Don't show the nginx version number, a security best practice
+  root /home/admin/projects/ParseTreeVisualizer/public;
+
+  ## Increase this if you want to upload large attachments
+  ## Or if you want to accept large git objects over http
+  client_max_body_size 20m;
+
+  ## See app/controllers/application_controller.rb for headers set
+
+  ## Individual nginx logs for this Sawyer vhost
+  access_log  /var/log/nginx/ParseTreeVisualizer_access.log;
+  error_log   /var/log/nginx/ParseTreeVisualizer_error.log;
+
+  location / {
+    ## Serve static files from defined root folder.
+    ## @sawyer is a named location for the upstream fallback, see below.
+    try_files $uri $uri/index.html $uri.html @ParseTreeVisualizer;
+  }
+
+  ## We route uploads through Sawyer to prevent XSS and enforce access control.
+  location /uploads/ {
+    root /home/admin/projects/ParseTreeVisualizer/public;
+    try_files $uri @ParseTreeVisualizer;
+  }
+
+  ## If a file, which is not found in the root folder is requested,
+  ## then the proxy passes the request to the upsteam (sawyer unicorn).
+  location @ParseTreeVisualizer {
+    ## If you use HTTPS make sure you disable gzip compression
+    ## to be safe against BREACH attack.
+    # gzip off;
+
+    ## https://github.com/gitlabhq/gitlabhq/issues/694
+    ## Some requests take more than 30 seconds.
+    proxy_read_timeout      300;
+    proxy_connect_timeout   300;
+    proxy_redirect          off;
+
+    proxy_set_header    Host                $http_host;
+    proxy_set_header    X-Real-IP           $remote_addr;
+    proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+    proxy_set_header    X-Forwarded-Proto   $scheme;
+    proxy_set_header    X-Frame-Options     SAMEORIGIN;
+
+    proxy_pass http://ParseTreeVisualizer;
+  }
+
+  ## Enable gzip compression as per rails guide:
+  ## http://guides.rubyonrails.org/asset_pipeline.html#gzip-compression
+  ## WARNING: If you are using relative urls remove the block below
+  ## See config/application.rb under "Relative url support" for the list of
+  ## other files that need to be changed for relative url support
+  location ~ ^/(assets)/ {
+    root /home/admin/projects/ParseTreeVisualizer/public;
+    gzip_static on; # to serve pre-gzipped version
+    expires max;
+    add_header Cache-Control public;
+  }
+
+  error_page 502 /502.html;
+}
+
