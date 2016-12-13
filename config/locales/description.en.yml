@@ -3,10 +3,26 @@ en:
     description_html: '
       <h1>Learn how parse tree looks like</h1>
       <p>
-      Parse tree is a term usually used in compiler technology and language recognition area.<br />
+      Parse tree is a term usually used in compiler technology and language recognition area.
+      </p>
+
+      <p>
       In those industries, `analyzing text data` is sometimes the same as `making parse tree based on a target grammar`.<br />
       This web site is made to visualize parse tree of any uploaded text based on a grammar written in Antlr4 specification.
       </p>
+
+      <p>
+      In brief, this parse tree thing is referred when someone needs to utilize parsing result of some text written in target grammar.<br/>
+      Comprehensive example is machine translation from English to Japanese.<br />
+      By creating parse tree by applying lexical analysis and syntax analysis against original English text,<br />
+      computer can recognize a word whether it is a noun or verb, or which adjective adorns a word.
+      </p>
+
+      <div>
+        <img src="https://upload.wikimedia.org/wikipedia/ja/2/2c/EnglishSyntaxTreeSample1.png" alt="parse tree sample">
+        <br />
+        (Reference: <a target="_blank" href="https://ja.wikipedia.org/wiki/%E6%A9%9F%E6%A2%B0%E7%BF%BB%E8%A8%B3">Wikipedia Machine Translation</a>)
+      </div>
 
       <p>
       As an example, let''s see how an ASP(Active Server Pages) text is converted into a parse tree.<br>
@@ -21,12 +37,26 @@ en:
       <p>will be parse to</p>
       <img src="%{parse_tree_sample}">
       <p style="margin-top: 15px;">
-      How is parse tree generated from original text?<br>
-      Obviously, someone needs to define that `how`.<br>
+      Computer can easily recognize that there is a `Sub` statement and its visibility is Private.<br/>
+      Furthermore, it is also understandable that argument of the sub statement is empty.<br/>
+      </p>
+      <p>
+      This parse tree is a production from `input text` and `parsing rule`.<br/>
+      How to create parsing rule depends on what parser you choose.<br/>
+      In this website, parsing rule is written by Antlr, a famous parser generator tool.<br/>
+      There are similar kind of tools like flex/bison, which are used to parse html on web browser.
       </p>
       <p>
       Here comes Antlr.<br>
       Antlr is a parser generator. How text should be parsed can be defined with Antlr.<br>
-      For more detail about Antlr, please refer to <a href="http://www.antlr.org">its official website</a>.
       </p>
+      <div>
+      For more detail about parser generator tools, please refer to following web sites.
+      <ul>
+        <li><a href="http://www.antlr.org">Antlr official web site</a></li>
+        <li><a href="https://github.com/antlr/antlr4">Antlr4 Github repository</a></li>
+        <li><a href="https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/#The_HTML_grammar_definition">How browsers work</a></li>
+        <li><a href="https://ruslanspivak.com/lsbasi-part1/">Let''s build a simple interpreter</a></li>
+      </ul>
+      </div>
     '
