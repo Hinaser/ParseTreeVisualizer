@@ -1,8 +1,0 @@
-ja:
-  about:
-    description_html: '
-      <h1>このサイトについて</h1>
-      <p>
-      このサイトはASP(Active Server Pages)の文法で記述されたテキストを解析し、解析木をブラウザ上に表示します。
-      </p>
-    '

@@ -1,0 +1,53 @@
+ja:
+  about:
+    description_html: '
+      <h1>解析木に触れてみる</h1>
+      <p>
+      解析木(構文木)という言葉は機械翻訳、コンパイラ技術や言語認識の分野でよく耳にする言葉です。<br />
+      抽象的に言えば、ある文法で記述された文章を解析し解析結果を何らかの形で利用するためにこの解析木が用いられます。<br />
+      親しみやすい例は異なる言語同士の機械翻訳です。<br/>
+      元の日本語の文章に対して字句解析、構文解析を行い解析木を作ることで<br />
+      ある単語が名詞か動詞かもしくは固有名詞か、形容詞がどの名詞に係っているかをコンピュータが判別できる形にします。<br />
+      そして辞書を使って名詞・動詞等の単語ごとに対応する英語の単語に置き換え、<br />
+      決まったルールに従って解析木のツリー構造を変換することで元の和文に対応する英文を生成することが可能になります。<br />
+      <div>
+        <img src="https://upload.wikimedia.org/wikipedia/ja/2/2c/EnglishSyntaxTreeSample1.png" alt="parse tree sample">
+        <br />
+        (引用: <a href="https://ja.wikipedia.org/wiki/%E6%A9%9F%E6%A2%B0%E7%BF%BB%E8%A8%B3">Wikipedia 機械翻訳</a>)
+      </div>
+      </p>
+
+      <p>
+      このWebサイトではアップロードされたテキストをAntlr4(後述)で記述された文法定義に沿って解析木を構築し、可視化します。<br/>
+      例としてASP(Active Server Pagas)で書かれたテキストがどのように解析木になるかを見てみます。<br/>
+      下記はASPで書かれたシンプルなテキストです:
+      </p>
+      <pre><%
+<br>Private Sub Command1_Click ()
+<br>    Text1.Text = "Hello, world!"
+<br>End Sub
+<br>%>
+      </pre>
+      <p>このテキストから下記のような解析木を作ることができます。</p>
+      <img src="%{parse_tree_sample}">
+      <p>
+      この解析木をコンピュータが読むと、ASPのコードブロック内にSUB文が存在しそのvisibilityがPrivateであることが容易に認識できます。<br />
+      それ以外にも引数が空であることなども容易に認識できます。
+      </p>
+      <p style="margin-top: 15px;">
+      この解析木は"入力テキスト"と"解析ルール"の2つの産物です。<br />
+      解析ルールの作り方は利用するパーサジェネレータツールに依存します。
+      このサイトでは<a href="http://www.antlr.org">Antlr</a>というツールを使って解析ルールを定義しています。<br>
+      同種のツールとしてはWebブラウザでHTMLのパースに利用されているFlex/Bisonといったものも存在します。
+      </p>
+
+      <p>
+      パーサジェネレータについては下記のサイトを参考にしてください。
+      </p>
+      <ul>
+        <li><a href="http://www.antlr.org">Antlr 公式サイト</a></li>
+        <li><a href="https://github.com/antlr/antlr4">Antlr4 Github レポジトリ</a></li>
+        <li><a href="https://www.html5rocks.com/ja/tutorials/internals/howbrowserswork/#The_HTML_grammar_definition">ブラウザの仕組み(Lexer, Parser)</a></li>
+        <li><a href="https://ruslanspivak.com/lsbasi-part1/">Let''s build a simple interpreter</a></li>
+      </ul>
+    '

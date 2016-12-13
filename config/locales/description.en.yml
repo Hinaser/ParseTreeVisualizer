@@ -1,0 +1,32 @@
+en:
+  about:
+    description_html: '
+      <h1>Learn how parse tree looks like</h1>
+      <p>
+      Parse tree is a term usually used in compiler technology and language recognition area.<br />
+      In those industries, `analyzing text data` is sometimes the same as `making parse tree based on a target grammar`.<br />
+      This web site is made to visualize parse tree of any uploaded text based on a grammar written in Antlr4 specification.
+      </p>
+
+      <p>
+      As an example, let''s see how an ASP(Active Server Pages) text is converted into a parse tree.<br>
+      Some text written in ASP syntax:
+      </p>
+      <pre><%
+<br>Private Sub Command1_Click ()
+<br>    Text1.Text = "Hello, world!"
+<br>End Sub
+<br>%>
+      </pre>
+      <p>will be parse to</p>
+      <img src="%{parse_tree_sample}">
+      <p style="margin-top: 15px;">
+      How is parse tree generated from original text?<br>
+      Obviously, someone needs to define that `how`.<br>
+      </p>
+      <p>
+      Here comes Antlr.<br>
+      Antlr is a parser generator. How text should be parsed can be defined with Antlr.<br>
+      For more detail about Antlr, please refer to <a href="http://www.antlr.org">its official website</a>.
+      </p>
+    '
