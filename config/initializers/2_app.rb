@@ -10,7 +10,13 @@ module ParseTreeVisualizer
   grammar_dir = Rails.root.join('lib', 'antlr4', 'grammars', "#{Settings.grammar['name']}").to_s
   LEXER_GRAMMAR = Dir["#{grammar_dir}/*Lexer.g4"]
   PARSER_GRAMMAR = Dir["#{grammar_dir}/*Parser.g4"]
-  COMBINED_GRAMMAR = Dir["#{grammar_dir}/#{Settings.grammar['name'].upcase}.g4"]
+  combined_grammar = nil
+
+  if LEXER_GRAMMAR.length + PARSER_GRAMMAR.length == 0
+    combined_grammar = Dir["#{grammar_dir}/*.g4"]
+  end
+
+  COMBINED_GRAMMAR = combined_grammar
 
   def lexer_rule
     return nil unless LEXER_GRAMMAR and LEXER_GRAMMAR.length > 0
